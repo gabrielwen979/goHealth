@@ -1,6 +1,6 @@
 # goHealth
 
-goHealth is a static meal-planning and wellness website. GitHub Pages serves the files in `src/main/webapp`; the page does not require a Node.js server or API.
+goHealth is a static meal-planning and wellness website. GitHub Pages serves the files in `src/main/webapp`; Supabase provides sign-in, cloud profile storage, and administrator-only account management.
 
 ## Publish on GitHub Pages
 
@@ -18,7 +18,41 @@ Use Node.js 18 or newer:
 node server.js
 ```
 
-The server listens on port `8787` by default. The page itself is static; profile data is stored in the browser's `localStorage`, separately for each of the four profiles (`SSU`, `RABBIT`, `MONKEY`, or `SNAKE`). Data does not sync between devices and is removed if that browser's site data is cleared. The profile selector is not authentication: anyone using the same browser can switch profiles and view their records. Do not enter sensitive information on a shared device.
+The server listens on port `8787` by default and serves the same static frontend. Sign-in requires a configured Supabase project.
+
+## Configure Supabase authentication
+
+The browser uses the project's public URL and publishable key from `src/main/webapp/supabase-config.js`. A publishable key is intended for browser use; never place a Supabase secret or service-role key in that file or in GitHub.
+
+1. In Supabase, open **SQL Editor**, run `supabase/migrations/20261028000000_gohealth_profiles.sql`, and confirm the `gohealth_profiles` table is created. Row Level Security restricts each account to its own profile.
+2. In **Authentication → URL Configuration**, set the Site URL to the deployed GitHub Pages URL and add that exact URL to Redirect URLs. Use the URL shown in GitHub repository **Settings → Pages**.
+3. In **Authentication → Users**, invite the administrator's email and complete the email verification. Then run this statement in SQL Editor, replacing `admin@example.com` with the administrator's email:
+
+   ```sql
+   update auth.users
+   set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb)
+     || '{"role":"admin"}'::jsonb
+   where email = lower('admin@example.com');
+   ```
+
+   Confirm the statement updates exactly one row. Then set the profile display name (replace the example email with the same administrator email):
+
+   ```sql
+   update public.gohealth_profiles as profile
+   set display_name = 'SSU'
+   from auth.users as auth_user
+   where profile.user_id = auth_user.id
+     and auth_user.email = lower('admin@example.com');
+   ```
+
+   Sign out and sign back in after changing the role so the new role is included in the access token.
+4. Deploy `supabase/functions/admin-users/index.ts` as an Edge Function named `admin-users`. Configure the function secret `GOHEALTH_SITE_URL` with the exact deployed GitHub Pages URL. Supabase's built-in `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` environment values are used by the function; the service-role key stays server-side.
+5. In **Authentication → Settings**, disable public sign-ups. The admin function sends invitations; invited users set their password from the email link. Configure custom SMTP before relying on invitation and reset emails for regular use.
+6. Push the site changes to `main` and wait for the **Deploy to GitHub Pages** workflow to finish. Then sign in as the administrator and use **權限管理** on the home page to invite users, reset passwords, or disable accounts.
+
+The admin function authorizes account actions using the administrator role stored in Supabase Auth app metadata. It does not expose other users' health profiles. Profile data is protected separately with database row-level security.
+
+Existing browser-only records are not automatically copied to Supabase. Keep the existing browser data until each person's cloud profile has been checked; the old profile selector is not a secure way to transfer records.
 
 ## Monthly menu
 
@@ -36,4 +70,4 @@ When Taipei City is selected, the weather and trail section also shows MRT and b
 
 ## Data and privacy
 
-Height, weight and waist records, dietary preferences, saved recommendations, and shopping checklists are stored locally in the current browser. They are not sent to GitHub Pages or shared with other devices. Browser storage is not encrypted or password protected; use a private device and avoid recording information you do not want other people using that browser to see.
+Height, weight and waist records, dietary preferences, saved recommendations, and shopping checklists are stored in the goHealth Supabase database and synchronized across devices after sign-in. Each user can access only their own profile; the administrator can manage account access but cannot read other users' health records. GitHub Pages serves the frontend and does not store profile data.

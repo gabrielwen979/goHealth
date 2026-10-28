@@ -16,6 +16,8 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js" defer></script>
     <script src="monthly-recipes.js" defer></script>
     <script src="taiwan-holidays.js" defer></script>
     <script src="hiking-trails.js" defer></script>
@@ -23,7 +25,29 @@
     <script src="gohealth.js" defer></script>
   </head>
   <body>
-    <header class="site-header">
+    <main class="auth-gate" id="authGate">
+      <section class="auth-card" aria-labelledby="authTitle">
+        <img src="images/gohealth-mark.svg" alt="" width="48" height="48" />
+        <p class="eyebrow">YOUR PRIVATE GOHEALTH PROFILE</p>
+        <h1 id="authTitle">登入 goHealth</h1>
+        <p class="auth-description">使用自己的帳號登入，只能查看與編輯自己的個人資料。</p>
+        <form id="loginForm" class="auth-form">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" autocomplete="username" required />
+          <label for="loginPassword">密碼</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required />
+          <button class="button button-dark" type="submit">登入</button>
+        </form>
+        <form id="newPasswordForm" class="auth-form" hidden>
+          <label for="newPassword">設定新密碼（至少 8 碼）</label>
+          <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required />
+          <button class="button button-dark" type="submit">設定密碼</button>
+        </form>
+        <button id="forgotPasswordButton" class="auth-link" type="button">忘記密碼</button>
+        <p id="authMessage" class="auth-message" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+    <header class="site-header" id="siteHeader" hidden>
       <a class="brand" id="homeLabel" href="#top" aria-label="goHealth 首頁">
         <img src="images/gohealth-mark.svg" alt="" width="42" height="42" />
       </a>
@@ -91,7 +115,8 @@
       </nav>
       <div class="header-actions">
         <div class="user-switcher">
-          <select id="userSelect" aria-label="切換使用者"></select>
+          <span id="userIdentity"></span>
+          <button id="signOutButton" type="button">登出</button>
         </div>
         <div class="text-size-control" role="group" aria-label="調整網站內文字大小">
           <button type="button" id="textSmaller" aria-label="縮小內文" title="縮小內文">A−</button>
@@ -102,7 +127,7 @@
       </div>
     </header>
 
-    <main id="siteApp">
+    <main id="siteApp" hidden>
       <div id="homePanel" data-tab-panel="home" role="tabpanel" aria-labelledby="homeTab" tabindex="0" hidden>
       <section class="hero section-wrap" id="top">
         <div class="hero-copy">
@@ -113,6 +138,7 @@
           </p>
           <div class="hero-actions">
             <a class="button button-dark" href="#menu">瀏覽本月菜單 <span aria-hidden="true">↓</span></a>
+            <button class="button button-dark admin-home-button" id="adminHomeButton" type="button" hidden>權限管理</button>
             <span class="hero-note"><span aria-hidden="true">✳</span> 每日兩餐・不含早餐</span>
           </div>
           <div class="hero-proof">
@@ -405,10 +431,10 @@
           <div>
             <p class="eyebrow">YOUR PROFILE & FOOD PREFERENCES</p>
             <h2>為自己，<em>留一份健康紀錄。</em></h2>
-            <p>目前顯示 <strong id="profileName">—</strong> 的瀏覽器資料。使用頁首選單切換本機紀錄。</p>
+            <p>目前顯示 <strong id="profileName">—</strong> 的雲端資料，登入後可在不同裝置同步使用。</p>
           </div>
         </div>
-        <p class="profile-sharing-note">資料只儲存在目前瀏覽器，不會上傳到網站伺服器，也不會跨裝置同步。使用者選單不是登入或密碼保護；共用這台裝置的人仍可切換檢視，清除瀏覽資料也會刪除紀錄，請勿輸入不希望他人看到的敏感資訊。</p>
+        <p class="profile-sharing-note">健康紀錄會同步儲存在 goHealth 雲端資料庫。登入者只能存取自己的資料；管理者只管理帳號，不會看到其他人的健康紀錄。</p>
         <form class="preferences-form" id="preferencesForm">
           <div class="preference-field">
             <label for="dietType">飲食偏好</label>
@@ -638,7 +664,31 @@
       </div>
     </main>
 
-    <footer class="site-footer">
+    <dialog class="admin-dialog" id="adminDialog" aria-labelledby="adminDialogTitle">
+      <div class="admin-dialog-heading">
+        <div>
+          <p class="eyebrow">ACCOUNT ADMINISTRATION</p>
+          <h2 id="adminDialogTitle">權限管理</h2>
+          <p>管理登入帳號與暱稱，不會顯示或讀取使用者的健康紀錄。</p>
+        </div>
+        <button class="admin-close" id="closeAdminDialog" type="button" aria-label="關閉">×</button>
+      </div>
+      <form class="admin-invite-form" id="inviteUserForm">
+        <label>
+          使用者暱稱
+          <input id="inviteDisplayName" type="text" maxlength="60" required />
+        </label>
+        <label>
+          使用者 Email
+          <input id="inviteEmail" type="email" required />
+        </label>
+        <button class="button button-dark" type="submit">寄送首次登入邀請</button>
+      </form>
+      <p class="admin-message" id="adminMessage" role="status" aria-live="polite"></p>
+      <div class="admin-user-list" id="adminUserList" aria-live="polite"></div>
+    </dialog>
+
+    <footer class="site-footer" id="siteFooter" hidden>
       <a class="brand footer-brand" href="#top" aria-label="goHealth 首頁">
         <img src="images/gohealth-mark.svg" alt="" width="36" height="36" />
       </a>

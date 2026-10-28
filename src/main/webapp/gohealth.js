@@ -353,7 +353,6 @@ const saveHeightButton = document.querySelector("#saveHeight");
 const trendCount = document.querySelector("#trendCount");
 const weightTrendChart = document.querySelector("#weightTrendChart");
 const deleteWeightButton = document.querySelector("#deleteWeight");
-const userSelect = document.querySelector("#userSelect");
 const profileName = document.querySelector("#profileName");
 const preferencesForm = document.querySelector("#preferencesForm");
 const dietTypeInput = document.querySelector("#dietType");
@@ -361,6 +360,19 @@ const avoidFoodsInput = document.querySelector("#avoidFoods");
 const suggestedMeals = document.querySelector("#suggestedMeals");
 const savedMeals = document.querySelector("#savedMeals");
 const profileMessage = document.querySelector("#profileMessage");
+const authGate = document.querySelector("#authGate");
+const loginForm = document.querySelector("#loginForm");
+const newPasswordForm = document.querySelector("#newPasswordForm");
+const authMessage = document.querySelector("#authMessage");
+const userIdentity = document.querySelector("#userIdentity");
+const adminHomeButton = document.querySelector("#adminHomeButton");
+const adminDialog = document.querySelector("#adminDialog");
+const adminMessage = document.querySelector("#adminMessage");
+const adminUserList = document.querySelector("#adminUserList");
+const supabaseConfig = window.goHealthSupabaseConfig;
+const supabaseClient = window.supabase && supabaseConfig
+  ? window.supabase.createClient(supabaseConfig.url, supabaseConfig.publishableKey)
+  : null;
 let selectedMenuDate = new Date();
 let displayedMenuMonth = new Date(
   selectedMenuDate.getFullYear(),
@@ -379,8 +391,7 @@ let currentUser = null;
 let profilePreferences = { dietType: "keto", avoidFoods: "" };
 let recommendedMealIds = [];
 let profileSaveQueue = Promise.resolve();
-let availableUsers = [];
-const profileStoragePrefix = "gohealth-profile-v1:";
+let awaitingPasswordSetup = /[#&]type=(invite|recovery|signup)\b/.test(window.location.hash);
 let selectedWeightDay = formatDateKey(new Date());
 let displayedCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 
@@ -446,53 +457,24 @@ function createProfileSnapshot() {
   };
 }
 
-function loadStoredProfile(userId) {
-  const savedProfile = localStorage.getItem(`${profileStoragePrefix}${userId}`);
-  if (savedProfile === null) {
-    return {
-      heightCm: null,
-      weightRecords: {},
-      preferences: { dietType: "keto", avoidFoods: "" },
-      recommendedMeals: [],
-      checkedItems: {},
-    };
-  }
-
-  const profile = JSON.parse(savedProfile);
-  if (
-    !profile ||
-    typeof profile !== "object" ||
-    Array.isArray(profile) ||
-    (profile.heightCm !== null && !Number.isFinite(profile.heightCm)) ||
-    !profile.weightRecords ||
-    typeof profile.weightRecords !== "object" ||
-    Array.isArray(profile.weightRecords) ||
-    !profile.preferences ||
-    typeof profile.preferences !== "object" ||
-    !["keto", "vegetarian", "pescatarian"].includes(profile.preferences.dietType) ||
-    typeof profile.preferences.avoidFoods !== "string" ||
-    !Array.isArray(profile.recommendedMeals) ||
-    !profile.checkedItems ||
-    typeof profile.checkedItems !== "object" ||
-    Array.isArray(profile.checkedItems)
-  ) {
-    throw new TypeError("瀏覽器中的個人資料格式不正確。");
-  }
-  return profile;
-}
-
 async function saveProfileData() {
-  if (!currentUser) return false;
+  if (!currentUser || !supabaseClient) return false;
   const userId = currentUser.id;
   const snapshot = createProfileSnapshot();
-  const operation = profileSaveQueue.then(() =>
-    localStorage.setItem(`${profileStoragePrefix}${userId}`, JSON.stringify(snapshot)),
-  );
+  const operation = profileSaveQueue.then(async () => {
+    const { error } = await supabaseClient
+      .from("gohealth_profiles")
+      .update({ profile: snapshot, updated_at: new Date().toISOString() })
+      .eq("user_id", userId)
+      .select("user_id")
+      .single();
+    if (error) throw error;
+  });
   profileSaveQueue = operation.catch(() => {});
   try {
     await operation;
     storageAvailable = true;
-    profileMessage.textContent = "個人資料已儲存在此瀏覽器。";
+    profileMessage.textContent = "個人資料已安全同步至雲端。";
     return true;
   } catch (error) {
     storageAvailable = false;
@@ -571,21 +553,44 @@ async function toggleRecommendedMeal(button) {
 
 async function activateProfile(user) {
   await profileSaveQueue;
-  const profile = loadStoredProfile(user.id);
-  currentUser = user;
+  const { data, error } = await supabaseClient
+    .from("gohealth_profiles")
+    .select("display_name, profile")
+    .eq("user_id", user.id)
+    .single();
+  if (error) throw error;
+  const profile = data.profile;
+  if (
+    !profile ||
+    typeof profile !== "object" ||
+    Array.isArray(profile) ||
+    (profile.heightCm !== null && !Number.isFinite(profile.heightCm)) ||
+    !profile.weightRecords ||
+    typeof profile.weightRecords !== "object" ||
+    Array.isArray(profile.weightRecords) ||
+    !profile.preferences ||
+    typeof profile.preferences !== "object" ||
+    !["keto", "vegetarian", "pescatarian"].includes(profile.preferences.dietType) ||
+    typeof profile.preferences.avoidFoods !== "string" ||
+    !Array.isArray(profile.recommendedMeals) ||
+    !profile.checkedItems ||
+    typeof profile.checkedItems !== "object" ||
+    Array.isArray(profile.checkedItems)
+  ) {
+    throw new TypeError("雲端個人資料格式不正確。");
+  }
+  currentUser = {
+    ...user,
+    displayName: data.display_name || user.user_metadata?.display_name || user.email,
+  };
   heightCm = profile.heightCm;
   weightRecords = profile.weightRecords;
   profilePreferences = profile.preferences;
   recommendedMealIds = profile.recommendedMeals;
   checkedItems = profile.checkedItems;
   storageAvailable = true;
-  profileName.textContent = user.displayName;
-  try {
-    localStorage.setItem("gohealth-selected-user-v1", user.id);
-  } catch (error) {
-    console.error("Could not save the selected goHealth profile.", error);
-  }
-  userSelect.value = user.id;
+  profileName.textContent = currentUser.displayName;
+  userIdentity.textContent = `${currentUser.displayName} · ${user.email}`;
   heightInput.value = heightCm ?? "";
   dietTypeInput.value = profilePreferences.dietType;
   avoidFoodsInput.value = profilePreferences.avoidFoods;
@@ -597,39 +602,245 @@ async function activateProfile(user) {
   updateBmi();
 }
 
-async function initializeProfileSelection() {
-  const profiles = [
-    { id: "ssu", displayName: "SSU" },
-    { id: "rabbit", displayName: "RABBIT" },
-    { id: "monkey", displayName: "MONKEY" },
-    { id: "snake", displayName: "SNAKE" },
-  ];
-  availableUsers = profiles;
-  userSelect.innerHTML = profiles.map((profile) =>
-    `<option value="${escapeHtml(profile.id)}">${escapeHtml(profile.displayName)}</option>`,
-  ).join("");
-  let savedUserId = "";
-  try {
-    savedUserId = localStorage.getItem("gohealth-selected-user-v1") || "";
-  } catch (error) {
-    console.error("Could not load the selected goHealth profile.", error);
+function displayAuthGate(message = "") {
+  authGate.hidden = false;
+  document.querySelector("#siteHeader").hidden = true;
+  document.querySelector("#siteApp").hidden = true;
+  document.querySelector("#siteFooter").hidden = true;
+  loginForm.hidden = false;
+  newPasswordForm.hidden = true;
+  authMessage.textContent = message;
+}
+
+function displayPasswordSetup() {
+  authGate.hidden = false;
+  document.querySelector("#siteHeader").hidden = true;
+  document.querySelector("#siteApp").hidden = true;
+  document.querySelector("#siteFooter").hidden = true;
+  loginForm.hidden = true;
+  newPasswordForm.hidden = false;
+  authMessage.textContent = "邀請已驗證，請先設定自己的登入密碼。";
+}
+
+async function handleAuthenticatedSession(session) {
+  if (!session?.user) {
+    currentUser = null;
+    adminHomeButton.hidden = true;
+    displayAuthGate();
+    return;
   }
-  userSelect.value = profiles.some(({ id }) => id === savedUserId)
-    ? savedUserId
-    : profiles[0].id;
-  userSelect.addEventListener("change", async () => {
-    userSelect.disabled = true;
+  try {
+    await activateProfile(session.user);
+  } catch (error) {
+    console.error("Could not load the signed-in goHealth profile.", error);
+    await supabaseClient.auth.signOut();
+    displayAuthGate(`無法載入個人資料：${error.message}`);
+    return;
+  }
+  authGate.hidden = true;
+  document.querySelector("#siteHeader").hidden = false;
+  document.querySelector("#siteApp").hidden = false;
+  document.querySelector("#siteFooter").hidden = false;
+  const isAdmin = session.user.app_metadata?.role === "admin";
+  adminHomeButton.hidden = !isAdmin;
+}
+
+async function invokeAdminFunction(body) {
+  const { data, error } = await supabaseClient.functions.invoke("admin-users", { body });
+  if (error) throw new Error(data?.message || error.message);
+  if (!data?.ok && !Array.isArray(data?.users)) {
+    throw new Error(data?.message || "管理操作未完成。");
+  }
+  return data;
+}
+
+async function refreshAdminUsers() {
+  adminUserList.textContent = "載入帳號中…";
+  try {
+    const { users } = await invokeAdminFunction({ action: "list" });
+    if (users.length === 0) {
+      adminUserList.textContent = "目前還沒有其他使用者帳號。";
+      return;
+    }
+    adminUserList.innerHTML = users.map((user) => `
+      <article class="admin-user-row">
+        <div>
+          <strong>${escapeHtml(user.displayName)}</strong>
+          <span>${escapeHtml(user.email || "")}</span>
+          ${user.disabled ? '<small class="account-disabled">已停用</small>' : ""}
+        </div>
+        <div class="admin-user-actions">
+          <button type="button" data-admin-action="reset" data-user-email="${escapeHtml(user.email || "")}">重設密碼</button>
+          <button type="button" data-admin-action="toggle" data-user-id="${escapeHtml(user.id)}" data-disabled="${String(user.disabled)}">${user.disabled ? "啟用" : "停用"}</button>
+        </div>
+      </article>
+    `).join("");
+  } catch (error) {
+    adminUserList.textContent = `無法載入帳號：${error.message}`;
+  }
+}
+
+async function initializeAuthentication() {
+  if (!supabaseClient) {
+    displayAuthGate("登入服務尚未設定，請聯絡 goHealth 管理者。");
+    return;
+  }
+
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const submitButton = loginForm.querySelector("button[type='submit']");
+    submitButton.disabled = true;
+    authMessage.textContent = "正在登入…";
     try {
-      const user = availableUsers.find(({ id }) => id === userSelect.value);
-      if (user) await activateProfile(user);
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: document.querySelector("#loginEmail").value.trim(),
+        password: document.querySelector("#loginPassword").value,
+      });
+      if (error) throw error;
+      await handleAuthenticatedSession(data.session);
     } catch (error) {
-      profileMessage.textContent = `無法載入使用者資料：${error.message}`;
-      console.error("Could not load selected goHealth profile.", error);
-      userSelect.value = currentUser?.id || "";
+      authMessage.textContent = `登入失敗：${error.message}`;
     } finally {
-      userSelect.disabled = false;
+      submitButton.disabled = false;
     }
   });
+
+  newPasswordForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const password = document.querySelector("#newPassword").value;
+    if (password.length < 8) {
+      authMessage.textContent = "密碼至少需要 8 個字元。";
+      return;
+    }
+    const submitButton = newPasswordForm.querySelector("button[type='submit']");
+    submitButton.disabled = true;
+    try {
+      const { data, error } = await supabaseClient.auth.updateUser({ password });
+      if (error) throw error;
+      awaitingPasswordSetup = false;
+      await handleAuthenticatedSession(data.user ? { user: data.user } : null);
+    } catch (error) {
+      authMessage.textContent = `設定密碼失敗：${error.message}`;
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
+
+  document.querySelector("#forgotPasswordButton").addEventListener("click", async () => {
+    const email = document.querySelector("#loginEmail").value.trim();
+    if (!email) {
+      authMessage.textContent = "請先輸入 Email，再按忘記密碼。";
+      return;
+    }
+    authMessage.textContent = "正在寄送密碼重設連結…";
+    try {
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}${window.location.pathname}`,
+      });
+      authMessage.textContent = error
+        ? `無法寄送重設連結：${error.message}`
+        : "若此 Email 已註冊，將收到密碼重設信。";
+    } catch (error) {
+      authMessage.textContent = `無法寄送重設連結：${error.message}`;
+    }
+  });
+
+  document.querySelector("#signOutButton").addEventListener("click", async () => {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) {
+      profileMessage.textContent = `登出失敗：${error.message}`;
+      return;
+    }
+    currentUser = null;
+    displayAuthGate();
+  });
+
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT") {
+      currentUser = null;
+      displayAuthGate();
+      return;
+    }
+    if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && awaitingPasswordSetup)) {
+      displayPasswordSetup();
+      return;
+    }
+    if (event === "SIGNED_IN" && session) {
+      queueMicrotask(() => {
+        void handleAuthenticatedSession(session).catch((error) => {
+          authMessage.textContent = `無法載入個人資料：${error.message}`;
+        });
+      });
+    }
+  });
+
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) throw error;
+  if (awaitingPasswordSetup && data.session) {
+    displayPasswordSetup();
+  } else if (data.session) {
+    await handleAuthenticatedSession(data.session);
+  } else {
+    displayAuthGate();
+  }
+
+  document.querySelector("#adminHomeButton").addEventListener("click", async () => {
+    if (currentUser?.app_metadata?.role !== "admin") return;
+    adminMessage.textContent = "";
+    adminDialog.showModal();
+    await refreshAdminUsers();
+  });
+  document.querySelector("#closeAdminDialog").addEventListener("click", () => adminDialog.close());
+  document.querySelector("#inviteUserForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const submitButton = event.currentTarget.querySelector("button[type='submit']");
+    submitButton.disabled = true;
+    adminMessage.textContent = "正在寄送邀請…";
+    try {
+      await invokeAdminFunction({
+        action: "invite",
+        email: document.querySelector("#inviteEmail").value,
+        displayName: document.querySelector("#inviteDisplayName").value,
+      });
+      event.currentTarget.reset();
+      adminMessage.textContent = "邀請已寄出；使用者可透過 Email 連結首次設定密碼。";
+      await refreshAdminUsers();
+    } catch (error) {
+      adminMessage.textContent = `邀請失敗：${error.message}`;
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
+  adminUserList.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-admin-action]");
+    if (!button || currentUser?.app_metadata?.role !== "admin") return;
+    button.disabled = true;
+    try {
+      if (button.dataset.adminAction === "reset") {
+        await invokeAdminFunction({
+          action: "reset-password",
+          email: button.dataset.userEmail,
+        });
+        adminMessage.textContent = "密碼重設連結已寄出。";
+      } else {
+        const disabled = button.dataset.disabled !== "true";
+        const action = disabled ? "停用" : "啟用";
+        if (!window.confirm(`確定要${action}這個使用者帳號嗎？`)) return;
+        await invokeAdminFunction({
+          action: "set-disabled",
+          userId: button.dataset.userId,
+          disabled,
+        });
+        adminMessage.textContent = `帳號已${action}。`;
+      }
+      await refreshAdminUsers();
+    } catch (error) {
+      adminMessage.textContent = `操作失敗：${error.message}`;
+    } finally {
+      button.disabled = false;
+    }
+  });
+
   preferencesForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     profilePreferences = {
@@ -649,8 +860,6 @@ async function initializeProfileSelection() {
     if (!button) return;
     await toggleRecommendedMeal(button);
   });
-  const selectedUser = profiles.find(({ id }) => id === userSelect.value);
-  if (selectedUser) await activateProfile(selectedUser);
 }
 
 function renderWeightCalendar() {
@@ -1461,7 +1670,7 @@ renderShoppingList();
 renderWeightCalendar();
 heightInput.value = heightCm ?? "";
 updateBmi();
-void initializeProfileSelection().catch((error) => {
-  profileMessage.textContent = `無法載入此瀏覽器的個人資料：${error.message}`;
-  console.error("Could not initialize goHealth profiles.", error);
+void initializeAuthentication().catch((error) => {
+  displayAuthGate(`無法連線到登入服務：${error.message}`);
+  console.error("Could not initialize goHealth authentication.", error);
 });
