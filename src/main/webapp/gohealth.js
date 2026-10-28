@@ -369,6 +369,7 @@ const adminHomeButton = document.querySelector("#adminHomeButton");
 const adminDialog = document.querySelector("#adminDialog");
 const adminMessage = document.querySelector("#adminMessage");
 const adminUserList = document.querySelector("#adminUserList");
+const refreshAdminUsersButton = document.querySelector("#refreshAdminUsers");
 const supabaseConfig = window.goHealthSupabaseConfig;
 const supabaseClient = window.supabase && supabaseConfig
   ? window.supabase.createClient(supabaseConfig.url, supabaseConfig.publishableKey)
@@ -659,20 +660,30 @@ async function refreshAdminUsers() {
   try {
     const { users } = await invokeAdminFunction({ action: "list" });
     if (users.length === 0) {
-      adminUserList.textContent = "目前還沒有其他使用者帳號。";
+      adminUserList.textContent = "目前還沒有 goHealth 使用者帳號。";
       return;
     }
     adminUserList.innerHTML = users.map((user) => `
       <article class="admin-user-row">
         <div>
-          <strong>${escapeHtml(user.displayName)}</strong>
+          <strong>${escapeHtml(user.displayName)}${user.role === "admin" ? ' <span class="admin-role-badge">管理者</span>' : ""}</strong>
           <span>${escapeHtml(user.email || "")}</span>
+          <small>最近登入：${user.lastSignInAt
+            ? escapeHtml(new Date(user.lastSignInAt).toLocaleString("zh-TW", {
+              timeZone: "Asia/Taipei",
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+            }))
+            : "尚無成功登入紀錄"}</small>
           ${user.disabled ? '<small class="account-disabled">已停用</small>' : ""}
         </div>
-        <div class="admin-user-actions">
+        ${user.role === "admin" ? "" : `<div class="admin-user-actions">
           <button type="button" data-admin-action="reset" data-user-email="${escapeHtml(user.email || "")}">重設密碼</button>
           <button type="button" data-admin-action="toggle" data-user-id="${escapeHtml(user.id)}" data-disabled="${String(user.disabled)}">${user.disabled ? "啟用" : "停用"}</button>
-        </div>
+        </div>`}
       </article>
     `).join("");
   } catch (error) {
@@ -789,6 +800,9 @@ async function initializeAuthentication() {
     adminMessage.textContent = "";
     adminDialog.showModal();
     await refreshAdminUsers();
+  });
+  refreshAdminUsersButton.addEventListener("click", () => {
+    void refreshAdminUsers();
   });
   document.querySelector("#closeAdminDialog").addEventListener("click", () => adminDialog.close());
   document.querySelector("#inviteUserForm").addEventListener("submit", async (event) => {

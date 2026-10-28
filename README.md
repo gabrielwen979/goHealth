@@ -50,7 +50,7 @@ The browser uses the project's public URL and publishable key from `src/main/web
 5. In **Authentication → Settings**, disable public sign-ups. The admin function sends invitations; invited users set their password from the email link. Configure custom SMTP before relying on invitation and reset emails for regular use.
 6. Push the site changes to `main` and wait for the **Deploy to GitHub Pages** workflow to finish. Then sign in as the administrator and use **權限管理** on the home page to invite users, reset passwords, or disable accounts.
 
-The admin function authorizes account actions using the administrator role stored in Supabase Auth app metadata. It does not expose other users' health profiles. Profile data is protected separately with database row-level security.
+The admin function authorizes account actions using the administrator role stored in Supabase Auth app metadata. Its account list includes all registered goHealth accounts and each account's latest successful sign-in timestamp; it is not a full sign-in audit log and does not include anonymous visitors. After changing the function source, deploy the updated `supabase/functions/admin-users/index.ts` as `admin-users` in Supabase. The function does not expose other users' health profiles. Profile data is protected separately with database row-level security.
 
 Existing browser-only records are not automatically copied to Supabase. Keep the existing browser data until each person's cloud profile has been checked; the old profile selector is not a secure way to transfer records.
 

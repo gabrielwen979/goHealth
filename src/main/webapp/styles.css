@@ -3235,6 +3235,38 @@ body {
   font-size: 12px;
 }
 
+.admin-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.admin-list-heading h3 {
+  margin: 0;
+  color: #e6f0e9;
+  font-size: 16px;
+}
+
+.admin-list-heading button {
+  padding: 8px 12px;
+  border: 1px solid #35544a;
+  border-radius: 999px;
+  background: #152522;
+  color: #b7e9ca;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+}
+
+.admin-list-note {
+  margin: 8px 0 0;
+  color: #90a49c;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
 .admin-user-row {
   display: flex;
   align-items: center;
@@ -3253,6 +3285,22 @@ body {
 
 .admin-user-row strong {
   color: #e6f0e9;
+}
+
+.admin-user-row small {
+  color: #91a69d;
+  font-size: 10px;
+}
+
+.admin-role-badge {
+  display: inline-block;
+  margin-left: 5px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #254537;
+  color: #b8eccb;
+  font-size: 9px;
+  vertical-align: middle;
 }
 
 .account-disabled {

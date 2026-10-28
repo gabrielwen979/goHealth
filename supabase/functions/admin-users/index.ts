@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type User } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -64,20 +64,26 @@ Deno.serve(async (request: Request) => {
   }
 
   if (body.action === "list") {
-    const { data, error } = await adminClient.auth.admin.listUsers({ page: 1, perPage: 500 });
-    if (error) {
-      console.error("Could not list goHealth accounts:", error.message);
-      return respond(500, { message: "Could not load the account list." });
+    const users: User[] = [];
+    const perPage = 1000;
+    for (let page = 1; ; page += 1) {
+      const { data, error } = await adminClient.auth.admin.listUsers({ page, perPage });
+      if (error) {
+        console.error("Could not list goHealth accounts:", error.message);
+        return respond(500, { message: "Could not load the account list." });
+      }
+      users.push(...data.users);
+      if (data.users.length < perPage) break;
     }
     return respond(200, {
-      users: data.users
-        .filter((user) => user.app_metadata?.role !== "admin")
-        .map((user) => ({
-          id: user.id,
-          email: user.email,
-          displayName: user.user_metadata?.display_name || user.email?.split("@")[0] || "",
-          disabled: Boolean(user.banned_until && Date.parse(user.banned_until) > Date.now()),
-        })),
+      users: users.map((user) => ({
+        id: user.id,
+        email: user.email,
+        displayName: user.user_metadata?.display_name || user.email?.split("@")[0] || "",
+        role: user.app_metadata?.role === "admin" ? "admin" : "user",
+        lastSignInAt: user.last_sign_in_at,
+        disabled: Boolean(user.banned_until && Date.parse(user.banned_until) > Date.now()),
+      })),
     });
   }
 

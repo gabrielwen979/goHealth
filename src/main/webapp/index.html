@@ -669,7 +669,7 @@
         <div>
           <p class="eyebrow">ACCOUNT ADMINISTRATION</p>
           <h2 id="adminDialogTitle">權限管理</h2>
-          <p>管理登入帳號與暱稱，不會顯示或讀取使用者的健康紀錄。</p>
+          <p>查看所有帳號最近一次登入，並管理邀請、密碼與帳號狀態。不會顯示使用者的健康紀錄。</p>
         </div>
         <button class="admin-close" id="closeAdminDialog" type="button" aria-label="關閉">×</button>
       </div>
@@ -685,6 +685,11 @@
         <button class="button button-dark" type="submit">寄送首次登入邀請</button>
       </form>
       <p class="admin-message" id="adminMessage" role="status" aria-live="polite"></p>
+      <div class="admin-list-heading">
+        <h3>使用者清單</h3>
+        <button id="refreshAdminUsers" type="button">重新整理</button>
+      </div>
+      <p class="admin-list-note">顯示所有已建立的 goHealth 帳號與最近一次成功登入時間；不包含未登入訪客，也不是完整的登入歷史。</p>
       <div class="admin-user-list" id="adminUserList" aria-live="polite"></div>
     </dialog>
 
