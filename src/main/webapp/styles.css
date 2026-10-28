@@ -3048,6 +3048,524 @@ body {
   }
 }
 
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 6px 11px;
+  border: 1px solid #b58bff80;
+  border-radius: 999px;
+  background:
+    linear-gradient(115deg, #ad62f43b, #4e8ff33d 48%, #f2477138),
+    #11121ed9;
+  box-shadow: 0 5px 16px #02030a66, 0 0 14px #884de222, inset 0 1px #ffffff50;
+  color: #f0eaff;
+  cursor: pointer;
+  font: 600 10px "DM Sans", "Noto Sans TC", sans-serif;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  transition: transform 180ms ease, box-shadow 220ms ease, background 220ms ease;
+}
+
+.theme-toggle:hover {
+  box-shadow: 0 8px 22px #02030a77, 0 0 18px #884de244, inset 0 1px #ffffff70;
+  transform: translateY(-1px);
+}
+
+.auth-card {
+  position: relative;
+}
+
+.auth-card > .theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+html[data-theme="dark"] .meal-card,
+html[data-theme="dark"] .shopping-card,
+html[data-theme="dark"] .learn-card,
+html[data-theme="dark"] .recommendations-panel,
+html[data-theme="dark"] .weight-dashboard,
+html[data-theme="dark"] .fact-card,
+html[data-theme="dark"] .total-item,
+html[data-theme="dark"] .shopping-tip,
+html[data-theme="dark"] .science-note,
+html[data-theme="dark"] .caution-content,
+html[data-theme="dark"] .profile-section {
+  box-shadow:
+    0 18px 46px #e7edf51a,
+    0 0 30px #b8c5e514,
+    inset 0 1px 0 #ffffff20;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --ink: #202630;
+  --muted: #5e6876;
+  --paper: #edf1f7;
+  --white: #ffffffc9;
+  --line: #ffffffbb;
+  --green: #287b63;
+  --deep: #2e5960;
+  --lime: #8aa94d;
+  --sage: #e7edf3;
+  --orange: #aa684b;
+}
+
+html[data-theme="light"] body {
+  color: #202630;
+  background-color: #edf1f7;
+  background-image:
+    radial-gradient(ellipse at 10% 4%, #d2e8ffb8, transparent 38rem),
+    radial-gradient(ellipse at 88% 16%, #f4dff2a3, transparent 42rem),
+    radial-gradient(ellipse at 54% 76%, #d9e7f79c, transparent 44rem),
+    linear-gradient(145deg, #f8faff, #edf1f7 54%, #f5f2fa);
+  animation: none;
+}
+
+html[data-theme="light"] body::before {
+  opacity: 0.22;
+  filter: blur(82px) saturate(110%);
+  animation: none;
+}
+
+html[data-theme="light"] .site-header {
+  border-color: #ffffffc7;
+  background: #ffffff91;
+  box-shadow: 0 12px 34px #2734481c, inset 0 1px #ffffff;
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+}
+
+html[data-theme="light"] .main-nav,
+html[data-theme="light"] .user-switcher,
+html[data-theme="light"] .text-size-control {
+  color: #4b5664;
+}
+
+html[data-theme="light"] .nav-tab {
+  color: #566273;
+}
+
+html[data-theme="light"] .text-size-control {
+  border-color: #ffffffcf;
+  background: #ffffff9e;
+  box-shadow: 0 5px 16px #202a3a1c, inset 0 1px #fff;
+}
+
+html[data-theme="light"] .text-size-control output {
+  color: #354052;
+}
+
+html[data-theme="light"] .visual-label,
+html[data-theme="light"] .visual-label span {
+  color: #48665d;
+}
+
+html[data-theme="light"] .floating-stamp {
+  border-color: #c9ded2;
+  background: #ffffffbd;
+  box-shadow: 0 12px 30px #18233724, 0 0 18px #76ad8b24, inset 0 1px #fff;
+  color: #286044;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+html[data-theme="light"] .nav-tab[aria-selected="true"] {
+  border-color: #ffffffd9;
+  background: linear-gradient(130deg, #ffffffdc, #eaf2ffb8 54%, #f9e9f4b8);
+  box-shadow: 0 5px 20px #202a3a20, inset 0 1px #fff;
+  color: #273344;
+}
+
+html[data-theme="light"] .nav-tab[aria-selected="true"]::after {
+  box-shadow: 0 0 12px #9b64dc88, 0 0 22px #558bdf55;
+}
+
+html[data-theme="light"] .header-cta,
+html[data-theme="light"] .button,
+html[data-theme="light"] .month-button,
+html[data-theme="light"] .calendar-nav button,
+html[data-theme="light"] .text-size-control button,
+html[data-theme="light"] .weight-save-button,
+html[data-theme="light"] .weight-delete-button,
+html[data-theme="light"] .meal-save-button,
+html[data-theme="light"] .theme-toggle {
+  border-color: #ffffffd9;
+  background:
+    linear-gradient(120deg, #ffffffc9, #e9f0ffd1 48%, #f9e9f2cc),
+    #ffffffaa;
+  box-shadow: 0 6px 18px #202a3a21, 0 0 14px #8b65c51b, inset 0 1px #fff;
+  color: #293345;
+}
+
+html[data-theme="light"] .header-cta:hover,
+html[data-theme="light"] .button:hover,
+html[data-theme="light"] .month-button:hover,
+html[data-theme="light"] .calendar-nav button:hover,
+html[data-theme="light"] .text-size-control button:hover:not(:disabled),
+html[data-theme="light"] .weight-save-button:hover,
+html[data-theme="light"] .meal-save-button:hover,
+html[data-theme="light"] .theme-toggle:hover {
+  background: linear-gradient(120deg, #ffffff, #e4edff, #f7e2f0);
+  box-shadow: 0 9px 24px #202a3a2b, 0 0 19px #8b65c52b, inset 0 1px #fff;
+  color: #202b3b;
+}
+
+html[data-theme="light"] .hero {
+  border-color: #ffffffbd;
+  background:
+    radial-gradient(ellipse at 80% 42%, #c3e6db8c, transparent 47%),
+    radial-gradient(ellipse at 8% 12%, #d5e7f78c, transparent 42%);
+}
+
+html[data-theme="light"] .eyebrow,
+html[data-theme="light"] .hero-description,
+html[data-theme="light"] .hero-note,
+html[data-theme="light"] .hero-proof p,
+html[data-theme="light"] .hero-bottom,
+html[data-theme="light"] .section-heading > div > p:last-child,
+html[data-theme="light"] .learn-heading > p,
+html[data-theme="light"] .shopping-intro > p:not(.eyebrow),
+html[data-theme="light"] .nutrition-footnote,
+html[data-theme="light"] .photo-disclaimer,
+html[data-theme="light"] .meal-type,
+html[data-theme="light"] .meal-kcal span,
+html[data-theme="light"] .macro-strip span,
+html[data-theme="light"] .meal-details ul,
+html[data-theme="light"] .meal-details ol,
+html[data-theme="light"] .picker-hint,
+html[data-theme="light"] .day-overview p,
+html[data-theme="light"] .total-item span,
+html[data-theme="light"] .shopping-tip p,
+html[data-theme="light"] .shopping-category,
+html[data-theme="light"] .shopping-item small,
+html[data-theme="light"] .shopping-card-note,
+html[data-theme="light"] .learn-index,
+html[data-theme="light"] .learn-card > p,
+html[data-theme="light"] .macro-key,
+html[data-theme="light"] .science-note p,
+html[data-theme="light"] .caution-content > p,
+html[data-theme="light"] .caution-content li,
+html[data-theme="light"] .site-footer,
+html[data-theme="light"] .weight-intro > p:not(.eyebrow),
+html[data-theme="light"] .weight-privacy,
+html[data-theme="light"] .calendar-weekdays span,
+html[data-theme="light"] .weight-form > label,
+html[data-theme="light"] .height-profile > label,
+html[data-theme="light"] .weight-form > label span,
+html[data-theme="light"] .height-profile > label span,
+html[data-theme="light"] .waist-label span,
+html[data-theme="light"] .bmi-note,
+html[data-theme="light"] .weight-form-message,
+html[data-theme="light"] .trend-heading span,
+html[data-theme="light"] .auth-description,
+html[data-theme="light"] .admin-dialog-heading p:last-child,
+html[data-theme="light"] .admin-list-note,
+html[data-theme="light"] .admin-fallback-search,
+html[data-theme="light"] .preference-field small,
+html[data-theme="light"] .recommendations-panel > div:first-child > p,
+html[data-theme="light"] .recommendation-empty,
+html[data-theme="light"] .kitchen-tip p,
+html[data-theme="light"] .freshness-tip p {
+  color: #5b6674;
+}
+
+html[data-theme="light"] .hero h1 em,
+html[data-theme="light"] .section-heading h2 em,
+html[data-theme="light"] .shopping-intro h2 em,
+html[data-theme="light"] .caution-title h2 em,
+html[data-theme="light"] .learn-heading h2 em,
+html[data-theme="light"] .profile-heading h2 em,
+html[data-theme="light"] .weight-intro h2 em {
+  color: #27785f;
+  text-shadow: none;
+}
+
+html[data-theme="light"] .hero-proof strong,
+html[data-theme="light"] .fact-card p,
+html[data-theme="light"] .shopping-tip strong,
+html[data-theme="light"] .science-note strong,
+html[data-theme="light"] .recommendation-columns h4,
+html[data-theme="light"] .recommendation-item strong,
+html[data-theme="light"] .calendar-header h3,
+html[data-theme="light"] .weight-entry-heading h3,
+html[data-theme="light"] .trend-heading strong,
+html[data-theme="light"] .admin-list-heading h3,
+html[data-theme="light"] .auth-form label,
+html[data-theme="light"] .admin-invite-form label,
+html[data-theme="light"] .preference-field label {
+  color: #273241;
+}
+
+html[data-theme="light"] .menu-section,
+html[data-theme="light"] .shopping-section,
+html[data-theme="light"] .learn-section,
+html[data-theme="light"] .caution-section {
+  background: transparent;
+  color: #202630;
+}
+
+html[data-theme="light"] .meal-card,
+html[data-theme="light"] .shopping-card,
+html[data-theme="light"] .learn-card,
+html[data-theme="light"] .recommendations-panel,
+html[data-theme="light"] .weight-dashboard,
+html[data-theme="light"] .fact-card,
+html[data-theme="light"] .total-item,
+html[data-theme="light"] .shopping-tip,
+html[data-theme="light"] .science-note,
+html[data-theme="light"] .caution-content,
+html[data-theme="light"] .profile-section,
+html[data-theme="light"] .weight-stat,
+html[data-theme="light"] .weather-section,
+html[data-theme="light"] .weather-day,
+html[data-theme="light"] .auth-card,
+html[data-theme="light"] .admin-dialog {
+  border-color: #ffffffd9;
+  background-color: #ffffff8a;
+  background-image: linear-gradient(145deg, #ffffffc9, #f2f5f9a6 74%);
+  box-shadow:
+    0 18px 46px #202a3a26,
+    0 5px 18px #18233712,
+    inset 0 1px 0 #ffffffed;
+  color: #273241;
+  backdrop-filter: blur(24px) saturate(165%);
+  -webkit-backdrop-filter: blur(24px) saturate(165%);
+}
+
+html[data-theme="light"] .meal-card::before,
+html[data-theme="light"] .shopping-card::before,
+html[data-theme="light"] .learn-card::before,
+html[data-theme="light"] .recommendations-panel::before,
+html[data-theme="light"] .weight-dashboard::before,
+html[data-theme="light"] .fact-card::before,
+html[data-theme="light"] .total-item::before,
+html[data-theme="light"] .shopping-tip::before,
+html[data-theme="light"] .science-note::before,
+html[data-theme="light"] .caution-content::before,
+html[data-theme="light"] .profile-section::before {
+  opacity: 0.55;
+  filter: drop-shadow(0 0 8px #7353aa38) drop-shadow(0 0 14px #436da52b);
+}
+
+html[data-theme="light"] .meal-card:hover,
+html[data-theme="light"] .shopping-card:hover,
+html[data-theme="light"] .learn-card:hover,
+html[data-theme="light"] .recommendations-panel:hover,
+html[data-theme="light"] .weight-dashboard:hover,
+html[data-theme="light"] .fact-card:hover,
+html[data-theme="light"] .shopping-tip:hover,
+html[data-theme="light"] .science-note:hover {
+  box-shadow: 0 22px 54px #202a3a31, 0 0 25px #795da128, inset 0 1px #fff;
+}
+
+html[data-theme="light"] .meal-card h4,
+html[data-theme="light"] .meal-details h5,
+html[data-theme="light"] .macro-strip strong,
+html[data-theme="light"] .recommendation-item strong,
+html[data-theme="light"] .weight-stat strong,
+html[data-theme="light"] .admin-dialog,
+html[data-theme="light"] .admin-dialog .dt-container,
+html[data-theme="light"] #adminUsersTable {
+  color: #273241;
+}
+
+html[data-theme="light"] .meal-tag,
+html[data-theme="light"] .week-switch,
+html[data-theme="light"] .day-picker-wrap,
+html[data-theme="light"] .day-overview,
+html[data-theme="light"] .shopping-tip,
+html[data-theme="light"] .science-note,
+html[data-theme="light"] .recommendation-item,
+html[data-theme="light"] .bmi-panel,
+html[data-theme="light"] .weather-location select,
+html[data-theme="light"] .weather-retry,
+html[data-theme="light"] .admin-invite-form,
+html[data-theme="light"] .admin-table-actions button,
+html[data-theme="light"] .admin-list-heading button,
+html[data-theme="light"] .admin-close,
+html[data-theme="light"] .user-switcher button,
+html[data-theme="light"] .admin-dialog .dt-container .dt-search input,
+html[data-theme="light"] .admin-dialog .dt-container .dt-length select,
+html[data-theme="light"] .admin-dialog .dt-container .dt-paging button {
+  border-color: #d7dfe9;
+  background: #ffffff9e;
+  color: #344052;
+  box-shadow: 0 5px 14px #202a3a14, inset 0 1px #fff;
+}
+
+html[data-theme="light"] .preference-field input,
+html[data-theme="light"] .preference-field select,
+html[data-theme="light"] .weight-input-row input,
+html[data-theme="light"] .auth-form input,
+html[data-theme="light"] .admin-invite-form input,
+html[data-theme="light"] .admin-fallback-search input,
+html[data-theme="light"] .admin-dialog .dt-container .dt-search input,
+html[data-theme="light"] .admin-dialog .dt-container .dt-length select {
+  border-color: #d3dce7;
+  background: #ffffffb8;
+  color: #253142;
+  box-shadow: inset 0 1px 3px #28364b12, 0 3px 10px #27364c0c;
+}
+
+html[data-theme="light"] .weight-dashboard,
+html[data-theme="light"] .weight-stat,
+html[data-theme="light"] .meal-card,
+html[data-theme="light"] .shopping-card,
+html[data-theme="light"] .learn-card,
+html[data-theme="light"] .profile-section,
+html[data-theme="light"] .recommendations-panel,
+html[data-theme="light"] .weather-section,
+html[data-theme="light"] .weather-day {
+  background:
+    linear-gradient(145deg, #ffffffbd, #f1f5f9a6 74%),
+    #ffffff80;
+}
+
+html[data-theme="light"] .calendar-day,
+html[data-theme="light"] .shopping-item span,
+html[data-theme="light"] .weather-heading h2,
+html[data-theme="light"] .weather-condition,
+html[data-theme="light"] .weather-temperature time,
+html[data-theme="light"] .weather-sun-times time,
+html[data-theme="light"] .hiking-heading h3,
+html[data-theme="light"] .hiking-weather-advice,
+html[data-theme="light"] .weight-form > label,
+html[data-theme="light"] .height-profile > label,
+html[data-theme="light"] .admin-dialog-heading h2 {
+  color: #273241;
+}
+
+html[data-theme="light"] .shopping-item,
+html[data-theme="light"] .calendar-panel,
+html[data-theme="light"] .weight-trend,
+html[data-theme="light"] .weather-sun-times,
+html[data-theme="light"] .hiking-recommendations {
+  border-color: #d5dee8;
+}
+
+html[data-theme="light"] .admin-dialog::backdrop {
+  background: #24324857;
+}
+
+html[data-theme="light"] .auth-gate {
+  background:
+    radial-gradient(ellipse at 50% 0, #cee8d9c9 0, transparent 52%),
+    linear-gradient(145deg, #eef3f8, #e8edf5);
+  color: #202630;
+}
+
+html[data-theme="light"] .auth-card .eyebrow {
+  color: #4d876c;
+}
+
+html[data-theme="light"] .admin-role-badge,
+html[data-theme="light"] .admin-status-badge {
+  border-color: #c9ddd1;
+  background: #e7f4ec;
+  color: #286044;
+}
+
+html[data-theme="light"] .admin-status-badge.account-disabled,
+html[data-theme="light"] .admin-status-badge.account-pending {
+  border-color: #ead1c1;
+  background: #fff0e7;
+  color: #8a4c32;
+}
+
+html[data-theme="light"] .admin-table-actions .admin-danger-button {
+  border-color: #e5c4c0;
+  background: #fff2f0;
+  color: #8d3936;
+}
+
+html[data-theme="light"] .admin-message,
+html[data-theme="light"] .auth-message,
+html[data-theme="light"] .profile-message {
+  color: #925b22;
+}
+
+html[data-theme="light"] .weather-section {
+  background:
+    radial-gradient(ellipse at 4% 0%, #d3ebf2aa, transparent 38%),
+    linear-gradient(135deg, #ffffffc9, #edf2f8c9 55%, #f4edf8c9);
+}
+
+html[data-theme="light"] .weather-updated,
+html[data-theme="light"] .weather-location,
+html[data-theme="light"] .weather-date,
+html[data-theme="light"] .weather-rain,
+html[data-theme="light"] .weather-attribution,
+html[data-theme="light"] .hiking-trail-actions p {
+  color: #596777;
+}
+
+html[data-theme="light"] .weather-temperature strong {
+  color: #8a5b25;
+}
+
+html[data-theme="light"] .weather-rain strong,
+html[data-theme="light"] .weather-attribution a {
+  color: #286d83;
+}
+
+html[data-theme="light"] .hiking-best-day {
+  border-color: #c8dfd0;
+  background: #edf7f0;
+  color: #2f6948;
+}
+
+html[data-theme="light"] .hiking-weather-advice {
+  border-color: #ccdfd2;
+  background: #f0f7f1;
+}
+
+html[data-theme="light"] .hiking-weather-advice.is-caution {
+  border-color: #ead7ad;
+  background: #fff8e9;
+  color: #765520;
+}
+
+html[data-theme="light"] .hiking-weather-advice.is-risky {
+  border-color: #e9c2c7;
+  background: #fff0f2;
+  color: #853b49;
+}
+
+html[data-theme="light"] .site-footer {
+  border-color: #cbd6e2;
+  color: #596777;
+}
+
+html[data-theme="light"] .footer-disclaimer,
+html[data-theme="light"] .shopping-progress,
+html[data-theme="light"] .meal-kcal,
+html[data-theme="light"] .meal-details summary,
+html[data-theme="light"] .profile-heading strong {
+  color: #287b63;
+}
+
+html[data-theme="light"] .theme-toggle:focus-visible {
+  outline: 2px solid #6c57a5;
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .header-actions .theme-toggle {
+    order: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="light"] body {
+    background-position: center;
+  }
+}
+
 .auth-gate {
   display: grid;
   min-height: 100vh;
@@ -5581,6 +6099,68 @@ body::before {
   .science-note::before,
   .caution-content::before,
   .profile-section::before {
+    animation: none !important;
+  }
+}
+
+.auth-card,
+.weight-stat,
+.weather-section,
+.weather-day {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.auth-card::before,
+.weight-stat::before,
+.weather-section::before,
+.weather-day::before {
+  position: absolute;
+  z-index: -1;
+  inset: -1.5px;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--prism-angle),
+    #9e54ff 0deg,
+    #518bff 82deg,
+    #fa4b75 168deg,
+    #6f65ff 248deg,
+    #a64aff 360deg
+  );
+  opacity: 0.72;
+  filter: drop-shadow(0 0 9px #8b54ff70) drop-shadow(0 0 16px #397dff40);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: prism-edge 12s linear infinite;
+  content: "";
+  pointer-events: none;
+}
+
+html[data-theme="dark"] .auth-card,
+html[data-theme="dark"] .weight-stat,
+html[data-theme="dark"] .weather-section,
+html[data-theme="dark"] .weather-day {
+  box-shadow: 0 18px 46px #e7edf51a, 0 0 28px #c4cce518, inset 0 1px #ffffff20;
+}
+
+html[data-theme="light"] .auth-card::before,
+html[data-theme="light"] .weight-stat::before,
+html[data-theme="light"] .weather-section::before,
+html[data-theme="light"] .weather-day::before {
+  opacity: 0.48;
+  filter: drop-shadow(0 0 8px #7353aa38) drop-shadow(0 0 14px #436da52b);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-card::before,
+  .weight-stat::before,
+  .weather-section::before,
+  .weather-day::before {
     animation: none !important;
   }
 }

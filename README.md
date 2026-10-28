@@ -52,3 +52,5 @@ When Taipei City is selected, the weather and trail section also shows MRT and b
 ## Data and privacy
 
 Height, weight and waist records, dietary preferences, saved recommendations, and shopping checklists are stored in the goHealth Supabase database and synchronized across devices after sign-in. Each user can access only their own profile; the administrator can manage account access but cannot read other users' health records. GitHub Pages serves the frontend and does not store profile data.
+
+Light/dark appearance is stored in the current browser, with a separate saved choice for each signed-in account on that device.

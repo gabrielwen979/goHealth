@@ -9,6 +9,14 @@
     />
     <meta name="theme-color" content="#080e11" />
     <title>goHealth｜生酮月曆飲食指南</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("gohealth-theme-v1") === "light" ? "light" : "dark";
+      } catch (error) {
+        console.error("Could not load the goHealth theme preference.", error);
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -34,6 +42,9 @@
     <main class="auth-gate" id="authGate">
       <section class="auth-card" aria-labelledby="authTitle">
         <img src="images/gohealth-mark.svg" alt="" width="48" height="48" />
+        <button class="theme-toggle" type="button" aria-label="切換至明亮模式">
+          <span aria-hidden="true">☀</span><span class="theme-toggle-label">明亮模式</span>
+        </button>
         <p class="eyebrow">YOUR PRIVATE GOHEALTH PROFILE</p>
         <h1 id="authTitle">登入 goHealth</h1>
         <p class="auth-description">使用自己的帳號登入，只能查看與編輯自己的個人資料。</p>
@@ -120,6 +131,9 @@
         </button>
       </nav>
       <div class="header-actions">
+        <button class="theme-toggle" type="button" aria-label="切換至明亮模式">
+          <span aria-hidden="true">☀</span><span class="theme-toggle-label">明亮模式</span>
+        </button>
         <div class="user-switcher">
           <span id="userIdentity"></span>
           <button id="signOutButton" type="button">登出</button>

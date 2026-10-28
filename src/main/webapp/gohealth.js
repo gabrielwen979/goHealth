@@ -336,6 +336,7 @@ const nextMenuMonthButton = document.querySelector("#nextMenuMonth");
 const textSmallerButton = document.querySelector("#textSmaller");
 const textLargerButton = document.querySelector("#textLarger");
 const textScaleValue = document.querySelector("#textScaleValue");
+const themeToggleButtons = [...document.querySelectorAll(".theme-toggle")];
 const weightCalendar = document.querySelector("#weightCalendar");
 const calendarMonthLabel = document.querySelector("#calendarMonthLabel");
 const selectedWeightDate = document.querySelector("#selectedWeightDate");
@@ -387,11 +388,13 @@ let monthlyMeals = [];
 let activeShoppingWeek = 1;
 let textScale = 1;
 const textScaleStorageKey = "gohealth-text-scale-v1";
+const themeStorageKey = "gohealth-theme-v1";
 let checkedItems = {};
 let storageAvailable = true;
 let weightRecords = {};
 let heightCm = null;
 let currentUser = null;
+let theme = document.documentElement.dataset.theme === "light" ? "light" : "dark";
 let profilePreferences = { dietType: "keto", avoidFoods: "" };
 let recommendedMealIds = [];
 let profileSaveQueue = Promise.resolve();
@@ -628,6 +631,48 @@ function displayPasswordSetup() {
   authMessage.textContent = "邀請已驗證，請先設定自己的登入密碼。";
 }
 
+function updateTheme(nextTheme, persist = true) {
+  theme = nextTheme === "light" ? "light" : "dark";
+  document.documentElement.dataset.theme = theme;
+  document.querySelector('meta[name="theme-color"]').content =
+    theme === "light" ? "#eef2f8" : "#080e11";
+  for (const button of themeToggleButtons) {
+    const nextLabel = theme === "light" ? "暗黑模式" : "明亮模式";
+    button.setAttribute("aria-label", `切換至${nextLabel}`);
+    button.title = `切換至${nextLabel}`;
+    button.querySelector(".theme-toggle-label").textContent = nextLabel;
+    button.querySelector("[aria-hidden='true']").textContent = theme === "light" ? "☾" : "☀";
+  }
+  if (!persist) return;
+  try {
+    localStorage.setItem(themeStorageKey, theme);
+    if (currentUser?.id) {
+      localStorage.setItem(`${themeStorageKey}:${currentUser.id}`, theme);
+    }
+  } catch (error) {
+    console.error("Could not save the goHealth theme preference.", error);
+  }
+}
+
+function restoreUserTheme(userId) {
+  try {
+    const savedTheme = localStorage.getItem(`${themeStorageKey}:${userId}`);
+    if (savedTheme === "light" || savedTheme === "dark") {
+      updateTheme(savedTheme, false);
+    }
+  } catch (error) {
+    console.error("Could not load the goHealth account theme preference.", error);
+  }
+}
+
+updateTheme(theme, false);
+
+for (const button of themeToggleButtons) {
+  button.addEventListener("click", () => {
+    updateTheme(theme === "dark" ? "light" : "dark");
+  });
+}
+
 async function handleAuthenticatedSession(session) {
   if (!session?.user) {
     currentUser = null;
@@ -637,12 +682,14 @@ async function handleAuthenticatedSession(session) {
   }
   try {
     await activateProfile(session.user);
+    restoreUserTheme(session.user.id);
   } catch (error) {
     console.error("Could not load the signed-in goHealth profile.", error);
     await supabaseClient.auth.signOut();
     displayAuthGate(`無法載入個人資料：${error.message}`);
     return;
   }
+
   authGate.hidden = true;
   document.querySelector("#siteHeader").hidden = false;
   document.querySelector("#siteApp").hidden = false;
