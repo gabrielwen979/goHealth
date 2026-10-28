@@ -174,8 +174,10 @@ Deno.serve(async (request: Request) => {
       redirectTo: siteUrl,
     });
     if (error) {
-      console.error("Could not send password reset email:", error.message);
-      return respond(500, { message: "Could not send the password reset email." });
+      console.error("Could not send password reset email:", error);
+      return respond(500, {
+        message: `Supabase Auth 無法寄送重設密碼信：${error.message}。請確認 Authentication 的 SMTP 設定與寄件網域，並查看 Supabase Auth Logs。`,
+      });
     }
     return respond(200, { ok: true });
   }

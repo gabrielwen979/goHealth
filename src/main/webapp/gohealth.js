@@ -653,7 +653,18 @@ async function handleAuthenticatedSession(session) {
 
 async function invokeAdminFunction(body) {
   const { data, error } = await supabaseClient.functions.invoke("admin-users", { body });
-  if (error) throw new Error(data?.message || error.message);
+  if (error) {
+    let message = data?.message;
+    if (!message && error.context instanceof Response) {
+      try {
+        const errorBody = await error.context.clone().json();
+        message = errorBody?.message;
+      } catch {
+        message = "";
+      }
+    }
+    throw new Error(message || error.message);
+  }
   if (!data?.ok && !Array.isArray(data?.users)) {
     throw new Error(data?.message || "管理操作未完成。");
   }
@@ -671,7 +682,7 @@ function renderFallbackAdminUsers() {
       <td>${row.email}</td>
       <td>${row.role}</td>
       <td>${row.status}</td>
-      <td>${row.lastSignIn._}</td>
+      <td>${row.lastSignIn}</td>
       <td>${row.actions}</td>
     </tr>
   `).join("");
@@ -711,7 +722,8 @@ async function refreshAdminUsers() {
           : user.emailConfirmed
             ? '<span class="admin-status-badge">正常</span>'
             : '<span class="admin-status-badge account-pending">待驗證</span>',
-        lastSignIn: { _: escapeHtml(lastSignIn), sort: user.lastSignInAt || "" },
+        lastSignIn: escapeHtml(lastSignIn),
+        lastSignInSort: user.lastSignInAt || "",
         actions: `<div class="admin-table-actions">${roleAction}${statusAction}${resetAction}${deleteAction}</div>`,
       };
     });
@@ -729,7 +741,11 @@ async function refreshAdminUsers() {
           { data: "email" },
           { data: "role" },
           { data: "status" },
-          { data: "lastSignIn" },
+          {
+            data: "lastSignIn",
+            render: (value, type, row) =>
+              type === "sort" || type === "type" ? row.lastSignInSort : value,
+          },
           { data: "actions", orderable: false },
         ],
         columnDefs: [
