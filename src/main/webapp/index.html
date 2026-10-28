@@ -696,6 +696,10 @@
       </div>
       <p class="admin-list-note">暫停帳號會禁止登入並保留健康資料；永久刪除帳號會一併刪除健康資料。SSU 是固定最高管理者，不可降權、暫停或刪除。最近登入顯示帳號最近一次成功登入時間。</p>
       <p class="admin-message" id="adminUserListMessage" role="status" aria-live="polite"></p>
+      <label class="admin-fallback-search" id="adminUsersFallbackSearch" hidden>
+        搜尋使用者
+        <input id="adminUsersFallbackSearchInput" type="search" placeholder="輸入姓名或 Email" />
+      </label>
       <div class="admin-table-wrap">
         <table class="display" id="adminUsersTable">
           <thead>

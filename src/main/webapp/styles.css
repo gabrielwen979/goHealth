@@ -3291,6 +3291,30 @@ body {
   overflow-x: auto;
 }
 
+.admin-fallback-search {
+  display: grid;
+  max-width: 360px;
+  gap: 7px;
+  margin-top: 14px;
+  color: #c8d8d0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-fallback-search[hidden] {
+  display: none;
+}
+
+.admin-fallback-search input {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #39524c;
+  border-radius: 8px;
+  background: #0c1517;
+  color: #f3f7f2;
+  font: inherit;
+}
+
 #adminUsersTable {
   min-width: 980px;
   width: 100%;

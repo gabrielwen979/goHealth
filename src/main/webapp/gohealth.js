@@ -370,6 +370,8 @@ const adminDialog = document.querySelector("#adminDialog");
 const adminMessage = document.querySelector("#adminMessage");
 const adminUserListMessage = document.querySelector("#adminUserListMessage");
 const adminUsersTable = document.querySelector("#adminUsersTable");
+const adminUsersFallbackSearch = document.querySelector("#adminUsersFallbackSearch");
+const adminUsersFallbackSearchInput = document.querySelector("#adminUsersFallbackSearchInput");
 const refreshAdminUsersButton = document.querySelector("#refreshAdminUsers");
 const supabaseConfig = window.goHealthSupabaseConfig;
 const supabaseClient = window.supabase && supabaseConfig
@@ -395,6 +397,7 @@ let recommendedMealIds = [];
 let profileSaveQueue = Promise.resolve();
 let awaitingPasswordSetup = /[#&]type=(invite|recovery|signup)\b/.test(window.location.hash);
 let adminUsersDataTable = null;
+let fallbackAdminUsers = [];
 let selectedWeightDay = formatDateKey(new Date());
 let displayedCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 
@@ -657,6 +660,23 @@ async function invokeAdminFunction(body) {
   return data;
 }
 
+function renderFallbackAdminUsers() {
+  const searchTerm = adminUsersFallbackSearchInput.value.trim().toLocaleLowerCase();
+  const rows = fallbackAdminUsers.filter((row) =>
+    `${row.displayName} ${row.email}`.toLocaleLowerCase().includes(searchTerm),
+  );
+  adminUsersTable.tBodies[0].innerHTML = rows.map((row) => `
+    <tr>
+      <td>${row.displayName}</td>
+      <td>${row.email}</td>
+      <td>${row.role}</td>
+      <td>${row.status}</td>
+      <td>${row.lastSignIn._}</td>
+      <td>${row.actions}</td>
+    </tr>
+  `).join("");
+}
+
 async function refreshAdminUsers() {
   adminUserListMessage.textContent = "載入帳號中…";
   try {
@@ -697,7 +717,8 @@ async function refreshAdminUsers() {
     });
 
     adminUserListMessage.textContent = "";
-    if (!adminUsersDataTable) {
+    if (typeof DataTable !== "undefined" && !adminUsersDataTable) {
+      adminUsersFallbackSearch.hidden = true;
       adminUsersDataTable = new DataTable(adminUsersTable, {
         data: tableRows,
         pageLength: 10,
@@ -726,9 +747,13 @@ async function refreshAdminUsers() {
           paginate: { first: "第一頁", last: "最後一頁", next: "下一頁", previous: "上一頁" },
         },
       });
-    } else {
+    } else if (adminUsersDataTable) {
       adminUsersDataTable.clear();
       adminUsersDataTable.rows.add(tableRows).draw();
+    } else {
+      adminUsersFallbackSearch.hidden = false;
+      fallbackAdminUsers = tableRows;
+      renderFallbackAdminUsers();
     }
   } catch (error) {
     adminUserListMessage.textContent = `無法載入帳號：${error.message}`;
@@ -851,7 +876,8 @@ async function initializeAuthentication() {
   document.querySelector("#closeAdminDialog").addEventListener("click", () => adminDialog.close());
   document.querySelector("#inviteUserForm").addEventListener("submit", async (event) => {
     event.preventDefault();
-    const submitButton = event.currentTarget.querySelector("button[type='submit']");
+    const inviteForm = event.currentTarget;
+    const submitButton = inviteForm.querySelector("button[type='submit']");
     submitButton.disabled = true;
     adminMessage.textContent = "正在寄送邀請…";
     try {
@@ -860,7 +886,7 @@ async function initializeAuthentication() {
         email: document.querySelector("#inviteEmail").value,
         displayName: document.querySelector("#inviteDisplayName").value,
       });
-      event.currentTarget.reset();
+      inviteForm.reset();
       adminMessage.textContent = "邀請已寄出；使用者可透過 Email 連結首次設定密碼。";
       await refreshAdminUsers();
     } catch (error) {
@@ -869,6 +895,7 @@ async function initializeAuthentication() {
       submitButton.disabled = false;
     }
   });
+  adminUsersFallbackSearchInput.addEventListener("input", renderFallbackAdminUsers);
   adminUsersTable.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-admin-action]");
     if (!button || currentUser?.app_metadata?.role !== "admin") return;
