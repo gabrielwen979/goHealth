@@ -1661,7 +1661,7 @@ window.addEventListener("popstate", syncAppPanelFromHash);
 window.addEventListener("hashchange", syncAppPanelFromHash);
 
 if (!activatePanelFromHash(window.location.hash)) {
-  activateAppPanel("menu");
+  activateAppPanel("home");
 }
 
 buildMonthlyMeals(displayedMenuMonth);
