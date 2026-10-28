@@ -24,11 +24,10 @@ The server listens on port `8787` by default and serves the same static frontend
 
 The browser uses the project's public URL and publishable key from `src/main/webapp/supabase-config.js`. A publishable key is intended for browser use; never place a Supabase secret or service-role key in that file or in GitHub.
 
-1. In Supabase, open **SQL Editor**, run `supabase/migrations/20261028000000_gohealth_profiles.sql` to create the `gohealth_profiles` table.
+1. If not already done, run `supabase/migrations/20261028000000_gohealth_profiles.sql` in Supabase **SQL Editor** to create the `gohealth_profiles` table.
 2. In **Authentication → URL Configuration**, set the Site URL to the deployed GitHub Pages URL and add that exact URL to Redirect URLs. Use the URL shown in GitHub repository **Settings → Pages**.
-2. Run `supabase/migrations/20261028010000_gohealth_admin_controls.sql`. It marks `gabrielwen979@gmail.com` as the protected SSU owner/admin, updates the owner profile name, and ensures suspended accounts cannot access profile data through existing sessions.
-3. In **Authentication → URL Configuration**, set the Site URL to the deployed GitHub Pages URL and add that exact URL to Redirect URLs. Use the URL shown in GitHub repository **Settings → Pages**.
-4. Deploy `supabase/functions/admin-users/index.ts` as an Edge Function named `admin-users`. Configure the function secret `GOHEALTH_SITE_URL` with the exact deployed GitHub Pages URL. Supabase's built-in `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` environment values are used by the function; the service-role key stays server-side.
+3. Run `supabase/migrations/20261028010000_gohealth_admin_controls.sql`. It marks `gabrielwen979@gmail.com` as the protected SSU owner/admin, updates the owner profile name, and ensures suspended accounts cannot access profile data through existing sessions.
+4. Deploy the latest `supabase/functions/admin-users/index.ts` as an Edge Function named `admin-users`. Configure the function secret `GOHEALTH_SITE_URL` with the exact deployed GitHub Pages URL. Supabase's built-in `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` environment values are used by the function; the service-role key stays server-side.
 5. In **Authentication → Settings**, disable public sign-ups. The admin function sends invitations; invited users set their password from the email link. Configure custom SMTP before relying on invitation and reset emails for regular use.
 6. Push the site changes to `main` and wait for the **Deploy to GitHub Pages** workflow to finish. Then sign in as SSU and use **權限管理** on the home page.
 
