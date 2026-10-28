@@ -16,12 +16,17 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js" defer></script>
     <script src="monthly-recipes.js" defer></script>
     <script src="taiwan-holidays.js" defer></script>
     <script src="hiking-trails.js" defer></script>
     <script src="weather.js" defer></script>
+    <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js" defer></script>
     <script src="gohealth.js" defer></script>
   </head>
   <body>
@@ -689,8 +694,23 @@
         <h3>使用者清單</h3>
         <button id="refreshAdminUsers" type="button">重新整理</button>
       </div>
-      <p class="admin-list-note">顯示所有已建立的 goHealth 帳號與最近一次成功登入時間；不包含未登入訪客，也不是完整的登入歷史。</p>
-      <div class="admin-user-list" id="adminUserList" aria-live="polite"></div>
+      <p class="admin-list-note">暫停帳號會禁止登入並保留健康資料；永久刪除帳號會一併刪除健康資料。SSU 是固定最高管理者，不可降權、暫停或刪除。最近登入顯示帳號最近一次成功登入時間。</p>
+      <p class="admin-message" id="adminUserListMessage" role="status" aria-live="polite"></p>
+      <div class="admin-table-wrap">
+        <table class="display" id="adminUsersTable">
+          <thead>
+            <tr>
+              <th>使用者</th>
+              <th>Email</th>
+              <th>權限</th>
+              <th>狀態</th>
+              <th>最近登入</th>
+              <th>帳號管理</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </dialog>
 
     <footer class="site-footer" id="siteFooter" hidden>

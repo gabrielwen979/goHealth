@@ -24,33 +24,15 @@ The server listens on port `8787` by default and serves the same static frontend
 
 The browser uses the project's public URL and publishable key from `src/main/webapp/supabase-config.js`. A publishable key is intended for browser use; never place a Supabase secret or service-role key in that file or in GitHub.
 
-1. In Supabase, open **SQL Editor**, run `supabase/migrations/20261028000000_gohealth_profiles.sql`, and confirm the `gohealth_profiles` table is created. Row Level Security restricts each account to its own profile.
+1. In Supabase, open **SQL Editor**, run `supabase/migrations/20261028000000_gohealth_profiles.sql` to create the `gohealth_profiles` table.
 2. In **Authentication → URL Configuration**, set the Site URL to the deployed GitHub Pages URL and add that exact URL to Redirect URLs. Use the URL shown in GitHub repository **Settings → Pages**.
-3. In **Authentication → Users**, invite the administrator's email and complete the email verification. Then run this statement in SQL Editor, replacing `admin@example.com` with the administrator's email:
-
-   ```sql
-   update auth.users
-   set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb)
-     || '{"role":"admin"}'::jsonb
-   where email = lower('admin@example.com');
-   ```
-
-   Confirm the statement updates exactly one row. Then set the profile display name (replace the example email with the same administrator email):
-
-   ```sql
-   update public.gohealth_profiles as profile
-   set display_name = 'SSU'
-   from auth.users as auth_user
-   where profile.user_id = auth_user.id
-     and auth_user.email = lower('admin@example.com');
-   ```
-
-   Sign out and sign back in after changing the role so the new role is included in the access token.
+2. Run `supabase/migrations/20261028010000_gohealth_admin_controls.sql`. It marks `gabrielwen979@gmail.com` as the protected SSU owner/admin, updates the owner profile name, and ensures suspended accounts cannot access profile data through existing sessions.
+3. In **Authentication → URL Configuration**, set the Site URL to the deployed GitHub Pages URL and add that exact URL to Redirect URLs. Use the URL shown in GitHub repository **Settings → Pages**.
 4. Deploy `supabase/functions/admin-users/index.ts` as an Edge Function named `admin-users`. Configure the function secret `GOHEALTH_SITE_URL` with the exact deployed GitHub Pages URL. Supabase's built-in `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` environment values are used by the function; the service-role key stays server-side.
 5. In **Authentication → Settings**, disable public sign-ups. The admin function sends invitations; invited users set their password from the email link. Configure custom SMTP before relying on invitation and reset emails for regular use.
-6. Push the site changes to `main` and wait for the **Deploy to GitHub Pages** workflow to finish. Then sign in as the administrator and use **權限管理** on the home page to invite users, reset passwords, or disable accounts.
+6. Push the site changes to `main` and wait for the **Deploy to GitHub Pages** workflow to finish. Then sign in as SSU and use **權限管理** on the home page.
 
-The admin function authorizes account actions using the administrator role stored in Supabase Auth app metadata. Its account list includes all registered goHealth accounts and each account's latest successful sign-in timestamp; it is not a full sign-in audit log and does not include anonymous visitors. After changing the function source, deploy the updated `supabase/functions/admin-users/index.ts` as `admin-users` in Supabase. The function does not expose other users' health profiles. Profile data is protected separately with database row-level security.
+The DataTables account list searches and sorts all registered accounts, roles, statuses, and most recent successful sign-in times. Admins can invite users, grant or revoke admin access, reset passwords, and suspend or restore accounts. Deleting an account permanently deletes its associated health profile; the UI requires confirmation and typing `DELETE`. Suspended accounts keep their data, cannot sign in, and their existing sessions are blocked from profile access by RLS. The SSU owner account is protected from role changes, suspension, and deletion. This is not a full sign-in audit log and does not include anonymous visitors. The admin function does not expose other users' health records.
 
 Existing browser-only records are not automatically copied to Supabase. Keep the existing browser data until each person's cloud profile has been checked; the old profile selector is not a secure way to transfer records.
 

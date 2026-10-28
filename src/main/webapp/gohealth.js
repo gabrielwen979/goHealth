@@ -368,7 +368,8 @@ const userIdentity = document.querySelector("#userIdentity");
 const adminHomeButton = document.querySelector("#adminHomeButton");
 const adminDialog = document.querySelector("#adminDialog");
 const adminMessage = document.querySelector("#adminMessage");
-const adminUserList = document.querySelector("#adminUserList");
+const adminUserListMessage = document.querySelector("#adminUserListMessage");
+const adminUsersTable = document.querySelector("#adminUsersTable");
 const refreshAdminUsersButton = document.querySelector("#refreshAdminUsers");
 const supabaseConfig = window.goHealthSupabaseConfig;
 const supabaseClient = window.supabase && supabaseConfig
@@ -393,6 +394,7 @@ let profilePreferences = { dietType: "keto", avoidFoods: "" };
 let recommendedMealIds = [];
 let profileSaveQueue = Promise.resolve();
 let awaitingPasswordSetup = /[#&]type=(invite|recovery|signup)\b/.test(window.location.hash);
+let adminUsersDataTable = null;
 let selectedWeightDay = formatDateKey(new Date());
 let displayedCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 
@@ -656,38 +658,80 @@ async function invokeAdminFunction(body) {
 }
 
 async function refreshAdminUsers() {
-  adminUserList.textContent = "載入帳號中…";
+  adminUserListMessage.textContent = "載入帳號中…";
   try {
     const { users } = await invokeAdminFunction({ action: "list" });
-    if (users.length === 0) {
-      adminUserList.textContent = "目前還沒有 goHealth 使用者帳號。";
-      return;
+    const tableRows = users.map((user) => {
+      const isSelf = user.id === currentUser?.id;
+      const isProtectedOwner = user.owner === true;
+      const lastSignIn = user.lastSignInAt
+        ? new Date(user.lastSignInAt).toLocaleString("zh-TW", {
+          timeZone: "Asia/Taipei",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+        : "尚無登入紀錄";
+      const roleAction = user.role === "admin"
+        ? `<button type="button" data-admin-action="set-role" data-user-id="${escapeHtml(user.id)}" data-role="user" ${isProtectedOwner || isSelf ? "disabled" : ""}>取消管理權</button>`
+        : `<button type="button" data-admin-action="set-role" data-user-id="${escapeHtml(user.id)}" data-role="admin" ${isSelf ? "disabled" : ""}>授予管理權</button>`;
+      const statusAction = user.disabled
+        ? `<button type="button" data-admin-action="set-disabled" data-user-id="${escapeHtml(user.id)}" data-disabled="false" ${isProtectedOwner || isSelf ? "disabled" : ""}>恢復帳號</button>`
+        : `<button type="button" data-admin-action="set-disabled" data-user-id="${escapeHtml(user.id)}" data-disabled="true" ${isProtectedOwner || isSelf ? "disabled" : ""}>暫停帳號</button>`;
+      const resetAction = `<button type="button" data-admin-action="reset" data-user-email="${escapeHtml(user.email || "")}" ${isProtectedOwner ? "disabled" : ""}>重設密碼</button>`;
+      const deleteAction = `<button class="admin-danger-button" type="button" data-admin-action="delete" data-user-id="${escapeHtml(user.id)}" data-display-name="${escapeHtml(user.displayName)}" ${isProtectedOwner || isSelf ? "disabled" : ""}>永久刪除</button>`;
+      return {
+        displayName: `${escapeHtml(user.displayName)}${isProtectedOwner ? ' <span class="admin-role-badge">SSU・固定管理者</span>' : ""}`,
+        email: escapeHtml(user.email || ""),
+        role: user.role === "admin" ? '<span class="admin-role-badge">管理者</span>' : "使用者",
+        status: user.disabled
+          ? '<span class="admin-status-badge account-disabled">已暫停</span>'
+          : user.emailConfirmed
+            ? '<span class="admin-status-badge">正常</span>'
+            : '<span class="admin-status-badge account-pending">待驗證</span>',
+        lastSignIn: { _: escapeHtml(lastSignIn), sort: user.lastSignInAt || "" },
+        actions: `<div class="admin-table-actions">${roleAction}${statusAction}${resetAction}${deleteAction}</div>`,
+      };
+    });
+
+    adminUserListMessage.textContent = "";
+    if (!adminUsersDataTable) {
+      adminUsersDataTable = new DataTable(adminUsersTable, {
+        data: tableRows,
+        pageLength: 10,
+        lengthMenu: [10, 25, 50],
+        order: [[0, "asc"]],
+        columns: [
+          { data: "displayName" },
+          { data: "email" },
+          { data: "role" },
+          { data: "status" },
+          { data: "lastSignIn" },
+          { data: "actions", orderable: false },
+        ],
+        columnDefs: [
+          { targets: [5], searchable: false },
+        ],
+        language: {
+          search: "搜尋：",
+          searchPlaceholder: "輸入姓名或 Email",
+          lengthMenu: "每頁顯示 _MENU_ 筆",
+          info: "顯示第 _START_–_END_ 筆，共 _TOTAL_ 位使用者",
+          infoEmpty: "目前沒有使用者",
+          infoFiltered: "（從 _MAX_ 位使用者中篩選）",
+          zeroRecords: "找不到符合的使用者",
+          emptyTable: "目前沒有 goHealth 使用者帳號",
+          paginate: { first: "第一頁", last: "最後一頁", next: "下一頁", previous: "上一頁" },
+        },
+      });
+    } else {
+      adminUsersDataTable.clear();
+      adminUsersDataTable.rows.add(tableRows).draw();
     }
-    adminUserList.innerHTML = users.map((user) => `
-      <article class="admin-user-row">
-        <div>
-          <strong>${escapeHtml(user.displayName)}${user.role === "admin" ? ' <span class="admin-role-badge">管理者</span>' : ""}</strong>
-          <span>${escapeHtml(user.email || "")}</span>
-          <small>最近登入：${user.lastSignInAt
-            ? escapeHtml(new Date(user.lastSignInAt).toLocaleString("zh-TW", {
-              timeZone: "Asia/Taipei",
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            }))
-            : "尚無成功登入紀錄"}</small>
-          ${user.disabled ? '<small class="account-disabled">已停用</small>' : ""}
-        </div>
-        ${user.role === "admin" ? "" : `<div class="admin-user-actions">
-          <button type="button" data-admin-action="reset" data-user-email="${escapeHtml(user.email || "")}">重設密碼</button>
-          <button type="button" data-admin-action="toggle" data-user-id="${escapeHtml(user.id)}" data-disabled="${String(user.disabled)}">${user.disabled ? "啟用" : "停用"}</button>
-        </div>`}
-      </article>
-    `).join("");
   } catch (error) {
-    adminUserList.textContent = `無法載入帳號：${error.message}`;
+    adminUserListMessage.textContent = `無法載入帳號：${error.message}`;
   }
 }
 
@@ -825,9 +869,10 @@ async function initializeAuthentication() {
       submitButton.disabled = false;
     }
   });
-  adminUserList.addEventListener("click", async (event) => {
+  adminUsersTable.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-admin-action]");
     if (!button || currentUser?.app_metadata?.role !== "admin") return;
+    if (button.disabled) return;
     button.disabled = true;
     try {
       if (button.dataset.adminAction === "reset") {
@@ -836,7 +881,7 @@ async function initializeAuthentication() {
           email: button.dataset.userEmail,
         });
         adminMessage.textContent = "密碼重設連結已寄出。";
-      } else {
+      } else if (button.dataset.adminAction === "set-disabled") {
         const disabled = button.dataset.disabled !== "true";
         const action = disabled ? "停用" : "啟用";
         if (!window.confirm(`確定要${action}這個使用者帳號嗎？`)) return;
@@ -846,6 +891,30 @@ async function initializeAuthentication() {
           disabled,
         });
         adminMessage.textContent = `帳號已${action}。`;
+      } else if (button.dataset.adminAction === "set-role") {
+        const role = button.dataset.role;
+        const action = role === "admin" ? "授予管理權" : "取消管理權";
+        const displayName = button.closest("tr").querySelector("td").textContent.trim();
+        if (!window.confirm(`確定要對「${displayName}」${action}嗎？`)) return;
+        await invokeAdminFunction({
+          action: "set-role",
+          userId: button.dataset.userId,
+          role,
+        });
+        adminMessage.textContent = `已${action}。目標使用者需重新登入，權限變更才會生效。`;
+      } else if (button.dataset.adminAction === "delete") {
+        const displayName = button.dataset.displayName;
+        if (!window.confirm(`確定永久刪除「${displayName}」的帳號與所有健康資料嗎？此操作無法復原。`)) return;
+        const confirmation = window.prompt(`請輸入 DELETE 以永久刪除「${displayName}」及其健康資料。`);
+        if (confirmation !== "DELETE") {
+          adminMessage.textContent = "已取消刪除。";
+          return;
+        }
+        await invokeAdminFunction({
+          action: "delete-user",
+          userId: button.dataset.userId,
+        });
+        adminMessage.textContent = `帳號「${displayName}」及其健康資料已永久刪除。`;
       }
       await refreshAdminUsers();
     } catch (error) {
