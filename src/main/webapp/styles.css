@@ -7488,12 +7488,6 @@ html[data-theme="light"] .travel-checklist li strong {
   outline-offset: 4px;
 }
 
-.cat-avatar-button-hero {
-  width: 68px;
-  height: 68px;
-  margin-top: 16px;
-}
-
 .cat-avatar-button-card {
   width: 82px;
   height: 82px;
@@ -7552,20 +7546,4 @@ html[data-theme="light"] .travel-checklist li strong {
 .mahjong-tile-face {
   font-size: 44px;
   line-height: 1;
-}
-
-.hero-game-buttons {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.mahjong-tile-button-hero {
-  width: 54px;
-  height: 68px;
-  margin: 16px 6px 0 0;
-}
-
-.mahjong-tile-button-hero .mahjong-tile-face {
-  font-size: 36px;
 }
