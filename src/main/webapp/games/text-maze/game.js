@@ -517,24 +517,48 @@ function loadRemoteSave(userId) {
 }
 
 async function loadProgressForSession(session) {
-  const nextUserId = session?.user?.id || null;
-  const localProgress = readLocalSave(nextUserId);
   currentSession = session;
+  
+  // 未登入時禁止遊戲
+  if (!session?.user?.id) {
+    currentUserId = null;
+    updateAccountUI(session);
+    setGameReady(true);
+    authForm.style.display = "block";
+    document.querySelector(".game-panel").style.display = "none";
+    document.querySelector(".intro").style.display = "none";
+    showMessage(accountMessage, "❌ 請先登入才能開始遊戲。");
+    syncIndicator.classList.add("is-offline");
+    return;
+  }
+  
+  const nextUserId = session.user.id;
+  const localProgress = readLocalSave(nextUserId);
   currentUserId = nextUserId;
   updateAccountUI(session);
-  if (!nextUserId || !supabaseClient) {
+  
+  if (!supabaseClient) {
     gameState = localProgress || createInitialState();
     setGameReady(true);
     if (gameState.completed) showVictoryOnRestore();
     return;
   }
+  
   try {
-    // Each Auth user owns one row; a missing cloud row falls back to that user's local save.
+    // 每個已登入的使用者的進度儲存在個人帳號（game_saves 表）
     const { data, error } = await loadRemoteSave(nextUserId);
     if (error) throw error;
     const remoteProgress = validateGameState(data?.game_state);
     gameState = remoteProgress || localProgress || createInitialState();
     setGameReady(true);
+    
+    // 顯示遊戲畫面
+    authForm.style.display = "none";
+    document.querySelector(".game-panel").style.display = "block";
+    document.querySelector(".intro").style.display = "block";
+    renderMaze();
+    renderBoard();
+    
     if (remoteProgress) {
       showMessage(accountMessage, "已從 Supabase 載入你的冒險進度。", "success");
       try {
@@ -553,6 +577,14 @@ async function loadProgressForSession(session) {
     console.error("Could not load the text maze cloud save.", error);
     gameState = localProgress || createInitialState();
     setGameReady(true);
+    
+    // 顯示遊戲畫面（雖然雲端失敗，但已登入可以遊玩）
+    authForm.style.display = "none";
+    document.querySelector(".game-panel").style.display = "block";
+    document.querySelector(".intro").style.display = "block";
+    renderMaze();
+    renderBoard();
+    
     syncIndicator.classList.remove("is-online");
     syncIndicator.classList.add("is-error");
     showMessage(accountMessage, `雲端載入失敗，已改用本機進度：${error.message}`, "error");
@@ -655,21 +687,8 @@ async function signUpWithPassword() {
 }
 
 async function signInAnonymously() {
-  if (!supabaseClient) {
-    showMessage(accountMessage, "尚未設定 Supabase；目前可直接離線遊玩，進度儲存在此裝置。", "error");
-    return;
-  }
-  anonymousButton.disabled = true;
-  try {
-    const { error } = await supabaseClient.auth.signInAnonymously();
-    if (error) throw error;
-    showMessage(accountMessage, "匿名登入成功，遊戲進度會同步至此匿名帳號。", "success");
-  } catch (error) {
-    console.error("Could not create an anonymous text maze session.", error);
-    showMessage(accountMessage, `匿名登入失敗：${error.message}。你仍可離線遊玩。`, "error");
-  } finally {
-    anonymousButton.disabled = false;
-  }
+  // 移除：禁止匿名登入，必須真實帳號
+  showMessage(accountMessage, "❌ 本遊戲僅開放給已註冊會員。請登入或建立帳號。", "error");
 }
 
 async function signOut() {
@@ -780,35 +799,53 @@ async function initializeGame() {
       supabaseClient = window.supabase.createClient(config.url, config.publishableKey);
       const { data, error } = await supabaseClient.auth.getSession();
       if (error) throw error;
+      
+      // 如果未登入，禁止遊戲
+      if (!data.session) {
+        setGameReady(true);
+        authForm.style.display = "block";
+        document.querySelector(".game-panel").style.display = "none";
+        document.querySelector(".intro").style.display = "none";
+        showMessage(accountMessage, "❌ 請先登入才能開始遊戲。");
+        syncIndicator.classList.add("is-offline");
+        authEventsReady = true;
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+          if (!authEventsReady) return;
+          if (session) {
+            location.reload();
+          }
+        });
+        return;
+      }
+      
       await loadProgressForSession(data.session);
       authEventsReady = true;
       supabaseClient.auth.onAuthStateChange((_event, session) => {
         if (!authEventsReady) return;
-        window.setTimeout(() => {
-          void loadProgressForSession(session);
-        }, 0);
+        if (!session) {
+          location.reload();
+        } else {
+          window.setTimeout(() => {
+            void loadProgressForSession(session);
+          }, 0);
+        }
       });
     } catch (error) {
       console.error("Could not initialize Supabase for the text maze.", error);
-      gameState = readLocalSave(null) || createInitialState();
       setGameReady(true);
+      authForm.style.display = "block";
+      document.querySelector(".game-panel").style.display = "none";
+      document.querySelector(".intro").style.display = "none";
       syncIndicator.classList.add("is-error");
-      showMessage(accountMessage, `Supabase 尚未連線，先使用本機進度：${error.message}`, "error");
+      showMessage(accountMessage, `❌ Supabase 連線失敗，無法啟用遊戲：${error.message}`, "error");
     }
   } else {
-    gameState = readLocalSave(null) || createInitialState();
     setGameReady(true);
-    showMessage(accountMessage, "目前為離線模式。填入 Supabase 設定後即可啟用帳號與跨裝置同步。");
+    authForm.style.display = "block";
+    document.querySelector(".game-panel").style.display = "none";
+    document.querySelector(".intro").style.display = "none";
+    showMessage(accountMessage, "❌ 遊戲需要登入。請在下方輸入帳號密碼。");
   }
-  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
-    try {
-      await navigator.serviceWorker.register("./service-worker.js");
-    } catch (error) {
-      console.error("Could not register the text maze service worker.", error);
-      showMessage(gameMessage, "離線快取尚未啟用；連線後仍可正常遊玩。", "error");
-    }
-  }
-  if (gameState.completed) showVictoryOnRestore();
 }
 
 void initializeGame();
