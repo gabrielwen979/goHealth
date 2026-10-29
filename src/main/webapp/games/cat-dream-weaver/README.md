@@ -121,3 +121,8 @@ game.destroy();
 ### 檔案清單
 
 `index.html`、`styles.css`、`cat-art.js`、`audio.js`、`cloud.js`、`maze.js`、`match3.js`、`main.js`、`supabase-config.js`、`supabase.sql`、`manifest.json`、`sw.js`、`icon.svg`、`icon-192.png`、`icon-512.png`、`apple-touch-icon.png`。
+
+## 難度升級後的新增 API（v4）
+
+- `CatMaze.create` 新增 `onStep(steps)`；實例新增 `getStats()`（steps / optimalSteps / shortestSteps / fogRadius…）與 `setTouchEnabled(bool)`。畫布支援滑動、拖曳與點擊自動走路；第 4 關起有迷霧，大地圖使用跟隨鏡頭。
+- `CatMatch3.difficultyFor(level)` 回傳 `{targetScore, moves, gemTypes, frozen, stone}`；`start` 新增 `level`、`moves`、`onMovesChange(left)`、`onFail({score, reason})`。第 3 關起有第 5 種寶石與冰凍毛線球，第 6 關起有石頭，四連消產生整行/列特效寶石，五連消產生彩虹寶石。

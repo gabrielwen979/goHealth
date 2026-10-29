@@ -44,6 +44,8 @@
     matchCanvas: byId('matchCanvas'),
     matchScore: byId('matchScore'),
     matchTarget: byId('matchTarget'),
+    matchMoves: byId('matchMoves'),
+    hudSteps: byId('hudSteps'),
     winModal: byId('winModal'),
     winTitle: byId('winTitle'),
     winText: byId('winText'),
@@ -264,13 +266,26 @@
       onMove: handleMove,
       onChest: handleChest,
       onBlocked: handleBlocked,
-      onGoal: handleGoal
+      onGoal: handleGoal,
+      onStep: updateSteps
     });
+    updateSteps(0);
     // maze.js 會把無效的起點改回 (1,1)，以實際位置為準並同步回存檔狀態
     state.last_position = maze.getPosition();
     openPassedChests(maze, level, state.last_position);
     saveState();
     queueMazeResize();
+  }
+
+  // 步數 / 最佳步數（最佳步數＝依序開完所有寶箱再到終點的路徑長）
+  function updateSteps(steps) {
+    if (!el.hudSteps || !maze) return;
+    var stats = maze.getStats ? maze.getStats() : null;
+    el.hudSteps.textContent = steps + (stats && stats.optimalSteps ? ' / ' + stats.optimalSteps : '');
+  }
+
+  function setMazeTouch(enabled) {
+    if (maze && maze.setTouchEnabled) maze.setTouchEnabled(enabled);
   }
 
   function handleMove(pos) {
@@ -292,8 +307,13 @@
     if (match || winPending) return;
     activeChestId = String(chestId);
     audio('crystal');
+    setMazeTouch(false);
+    var diff = window.CatMatch3 && window.CatMatch3.difficultyFor
+      ? window.CatMatch3.difficultyFor(state.current_level)
+      : { targetScore: MATCH_TARGET, moves: 0 };
     setText(el.matchScore, 0);
-    setText(el.matchTarget, MATCH_TARGET);
+    setText(el.matchTarget, diff.targetScore);
+    setText(el.matchMoves, diff.moves || '∞');
     setHidden(el.matchModal, false);
     if (!el.matchCanvas || !window.CatMatch3) {
       // 無法顯示消除遊戲時直接開箱，避免玩家被擋死
@@ -303,9 +323,18 @@
     var chestIdAtStart = activeChestId;
     try {
       match = window.CatMatch3.start(el.matchCanvas, {
-        targetScore: MATCH_TARGET,
+        level: state.current_level,
+        targetScore: diff.targetScore,
+        moves: diff.moves,
         onScore: function (score) {
           setText(el.matchScore, score);
+        },
+        onMovesChange: function (left) {
+          setText(el.matchMoves, left);
+        },
+        onFail: function () {
+          audio('meow');
+          setText(el.matchScore, 0);
         },
         onComplete: function (score) {
           finishMatch(chestIdAtStart, score);
@@ -324,6 +353,7 @@
     state.fish_score += gain;
     destroyMatch();
     setHidden(el.matchModal, true);
+    setMazeTouch(true);
     if (maze) maze.openChest(chestId);
     updateHud();
     saveState();
@@ -336,6 +366,7 @@
     if (!state || winPending) return;
     var clearedLevel = state.current_level;
     winPending = true;
+    setMazeTouch(false);
     audio('win');
     state.current_level = clearedLevel + 1;
     state.last_position = { x: START_POS.x, y: START_POS.y };

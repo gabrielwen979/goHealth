@@ -98,6 +98,7 @@
         <div class="hud-chip hud-player" title="玩家">🐱 <span id="hudPlayer">Lily</span></div>
         <div class="hud-chip" title="關卡">第 <span id="hudLevel">1</span> 關</div>
         <div class="hud-chip" title="小魚乾">🐟 <span id="hudScore">0</span></div>
+        <div class="hud-chip" title="步數 / 最佳步數">👣 <span id="hudSteps">0</span></div>
         <div class="hud-actions">
           <button id="btnMute" class="icon-btn" type="button" aria-label="切換音效">🔊</button>
           <button id="btnLogout" class="icon-btn" type="button" aria-label="返回 goHealth 首頁">返回首頁</button>
@@ -131,9 +132,9 @@
   <div id="matchModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="matchTitle" hidden>
     <div class="card cat-frame modal-card match-card">
       <h2 id="matchTitle" class="card-title">萌貓寶物消除</h2>
-      <p class="match-score">🐟 <b id="matchScore">0</b> / <b id="matchTarget">50</b></p>
+      <p class="match-score">🐟 <b id="matchScore">0</b> / <b id="matchTarget">50</b>　👟 剩餘 <b id="matchMoves">∞</b> 步</p>
       <canvas id="matchCanvas" width="400" height="400"></canvas>
-      <p class="card-hint">點選相鄰兩格或滑動交換，湊滿目標分數就能清除障礙！</p>
+      <p class="card-hint">點選相鄰兩格或滑動交換；步數用完前湊滿目標分數就能清除障礙！冰凍毛線球要在旁邊消除才能解凍。</p>
     </div>
   </div>
 
