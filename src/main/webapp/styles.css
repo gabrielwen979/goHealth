@@ -177,6 +177,22 @@ button {
   margin-top: 29px;
 }
 
+.hero-game-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 17px;
+  color: var(--deep);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration-color: currentColor;
+  text-underline-offset: 4px;
+}
+
+.hero-game-link:hover {
+  color: #2b7359;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -1271,6 +1287,11 @@ button {
   .hero-actions {
     gap: 13px;
     margin-top: 21px;
+  }
+
+  .hero-game-link {
+    margin-top: 14px;
+    font-size: 10px;
   }
 
   .button {
