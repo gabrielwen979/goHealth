@@ -52,10 +52,12 @@
   var FLOWER_CHANCE = 0.4;
   /** 滑動手勢的最小位移（像素）。 */
   var SWIPE_MIN_PX = 18;
-  /** 從第幾關開始出現戰爭迷霧。 */
-  var FOG_START_LEVEL = 4;
+  /** 從第幾關開始出現黑霧（第 1 關即有）。 */
+  var FOG_START_LEVEL = 1;
   /** 迷霧視野半徑下限（圖磚）。 */
-  var FOG_MIN_RADIUS = 3;
+  var FOG_MIN_RADIUS = 2;
+  /** 從第幾關開始，終點大門也隱藏在黑霧中（需靠近才看得到）。 */
+  var GOAL_HIDDEN_LEVEL = 8;
 
   // ---------------------------------------------------------------------------
   // 小工具
@@ -158,7 +160,8 @@
     if (level < FOG_START_LEVEL) {
       return 0;
     }
-    return Math.max(FOG_MIN_RADIUS, 7 - Math.floor((level - FOG_START_LEVEL) / 3));
+    // 視野半徑：第 1 關 5 格，之後每 3 關縮小 1 格，最低 2 格
+    return Math.max(FOG_MIN_RADIUS, 5 - Math.floor((level - FOG_START_LEVEL) / 3));
   }
 
   /**
@@ -1028,15 +1031,15 @@
       f.globalCompositeOperation = 'source-over';
       f.globalAlpha = 1;
       f.clearRect(0, 0, fogCanvas.width, fogCanvas.height);
-      f.fillStyle = '#0d1626';
+      f.fillStyle = '#000';
       f.fillRect(0, 0, fogCanvas.width, fogCanvas.height);
 
       // 之後以「世界像素」座標作畫（扣掉鏡頭）
       f.setTransform(dpr, 0, 0, dpr, -camX * dpr, -camY * dpr);
       f.globalCompositeOperation = 'destination-out';
 
-      // 走過的格子：半透明挖洞，讓已探索的路還看得到、但比視野內暗
-      f.globalAlpha = 0.62;
+      // 走過的格子：只留淡淡記憶，讓玩家得自己記路
+      f.globalAlpha = 0.4;
       for (key in visited) {
         var vp = key.split(',');
         var vx = (Number(vp[0]) + 0.5) * tile;
@@ -1061,11 +1064,14 @@
         }
       }
 
-      // 終點大門：永遠可見
+      // 終點大門：低關卡永遠可見；高關卡隱藏在黑霧中
       var gx = (data.goal.x + 0.5) * tile;
       var gy = (data.goal.y + 0.5) * tile;
-      f.globalAlpha = 1;
-      f.drawImage(sprite, gx - half * 1.4, gy - half * 1.4, half * 2.8, half * 2.8);
+      var goalVisible = data.level < GOAL_HIDDEN_LEVEL;
+      if (goalVisible) {
+        f.globalAlpha = 1;
+        f.drawImage(sprite, gx - half * 1.4, gy - half * 1.4, half * 2.8, half * 2.8);
+      }
 
       // 貓咪視野：實心到 (R-1.2) 格，之後平滑淡出到 (R+0.6) 格
       var cx = (cp.x + 0.5) * tile;
@@ -1085,7 +1091,10 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.drawImage(fogCanvas, 0, 0);
 
-      // 終點金色呼吸光暈（畫在迷霧之上）
+      // 終點金色呼吸光暈（畫在迷霧之上；高關卡隱藏）
+      if (!goalVisible) {
+        return;
+      }
       ctx.setTransform(dpr, 0, 0, dpr, -camX * dpr, -camY * dpr);
       var pulse = 0.28 + 0.12 * Math.sin(t / 380);
       var glow = ctx.createRadialGradient(gx, gy, tile * 0.2, gx, gy, tile * 1.7);
