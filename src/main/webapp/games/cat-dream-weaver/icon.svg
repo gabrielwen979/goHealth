@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg1" cx="25%" cy="20%" r="80%">
+      <stop offset="0" stop-color="#F3E8EE"/>
+      <stop offset="1" stop-color="#D6E4EB"/>
+    </radialGradient>
+    <radialGradient id="fur" cx="38%" cy="32%" r="75%">
+      <stop offset="0" stop-color="#F7F8FA"/>
+      <stop offset="0.55" stop-color="#CFD3DA"/>
+      <stop offset="1" stop-color="#9AA1AD"/>
+    </radialGradient>
+    <radialGradient id="eye" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#D9F7DF"/>
+      <stop offset="0.45" stop-color="#6CCB98"/>
+      <stop offset="1" stop-color="#2E8B63"/>
+    </radialGradient>
+    <linearGradient id="ear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8E95A1"/>
+      <stop offset="1" stop-color="#BCC1CA"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg1)"/>
+  <circle cx="110" cy="420" r="150" fill="#E2EDE4" opacity="0.8"/>
+  <circle cx="430" cy="110" r="130" fill="#E6D3B6" opacity="0.55"/>
+  <g transform="translate(256 262) scale(0.92) translate(-256 -262)">
+  <!-- 貓耳 -->
+  <path d="M120 250 Q112 150 150 100 Q215 125 245 175 Z" fill="url(#ear)"/>
+  <path d="M392 250 Q400 150 362 100 Q297 125 267 175 Z" fill="url(#ear)"/>
+  <path d="M148 215 Q144 160 160 135 Q196 152 212 182 Z" fill="#F2C4D0"/>
+  <path d="M364 215 Q368 160 352 135 Q316 152 300 182 Z" fill="#F2C4D0"/>
+  <!-- 圓臉 -->
+  <ellipse cx="256" cy="288" rx="150" ry="124" fill="url(#fur)" stroke="#8B93A0" stroke-width="5"/>
+  <ellipse cx="186" cy="318" rx="56" ry="46" fill="#fff" opacity="0.3"/>
+  <ellipse cx="326" cy="318" rx="56" ry="46" fill="#fff" opacity="0.3"/>
+  <g stroke="#7A8190" stroke-width="7" stroke-linecap="round" opacity="0.45" fill="none">
+    <path d="M232 188 L229 220"/><path d="M256 184 L256 218"/><path d="M280 188 L283 220"/>
+  </g>
+  <!-- 綠寶石大眼 -->
+  <g stroke="#4B5563" stroke-width="5">
+    <ellipse cx="196" cy="280" rx="38" ry="44" fill="url(#eye)"/>
+    <ellipse cx="316" cy="280" rx="38" ry="44" fill="url(#eye)"/>
+  </g>
+  <ellipse cx="196" cy="282" rx="14" ry="30" fill="#1F2937"/>
+  <ellipse cx="316" cy="282" rx="14" ry="30" fill="#1F2937"/>
+  <g fill="#fff">
+    <ellipse cx="185" cy="264" rx="10" ry="12"/><ellipse cx="305" cy="264" rx="10" ry="12"/>
+    <circle cx="208" cy="299" r="5"/><circle cx="328" cy="299" r="5"/>
+  </g>
+  <!-- 鼻嘴 -->
+  <path d="M240 330 Q256 322 272 330 Q264 350 256 352 Q248 350 240 330 Z" fill="#E8A0B2"/>
+  <path d="M256 352 L256 364 M256 364 Q242 382 228 368 M256 364 Q270 382 284 368" stroke="#5A626E" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <ellipse cx="140" cy="334" rx="22" ry="13" fill="#F0A0B4" opacity="0.35"/>
+  <ellipse cx="372" cy="334" rx="22" ry="13" fill="#F0A0B4" opacity="0.35"/>
+  <g stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.9">
+    <path d="M150 330 L88 318"/><path d="M150 345 L90 355"/>
+    <path d="M362 330 L424 318"/><path d="M362 345 L422 355"/>
+  </g>
+  </g>
+  <!-- 星光 -->
+  <path d="M96 96 Q96 112 80 112 Q96 112 96 128 Q96 112 112 112 Q96 112 96 96 Z" fill="#fff" opacity="0.9"/>
+  <path d="M424 400 Q424 412 412 412 Q424 412 424 424 Q424 412 436 412 Q424 412 424 400 Z" fill="#fff" opacity="0.85"/>
+</svg>

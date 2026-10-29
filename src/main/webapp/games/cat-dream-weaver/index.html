@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>肉墊的夢境編織：銀漸層英短的大冒險</title>
+  <meta name="description" content="貓咪療癒益智遊戲：英短綠寶石迷宮 × 萌貓寶物消除">
+  <meta name="theme-color" content="#F3E8EE">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="夢境編織">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="watercolor" aria-hidden="true"></div>
+
+  <main id="app">
+    <!-- 加載畫面：貓耳、貓尾動畫 -->
+    <section id="loadingScreen" class="screen loading" aria-live="polite">
+      <div class="loading-cat" aria-hidden="true">
+        <svg viewBox="0 0 220 200" width="220" height="200">
+          <defs>
+            <radialGradient id="lcFur" cx="38%" cy="30%" r="75%">
+              <stop offset="0" stop-color="#F7F8FA"/>
+              <stop offset="0.55" stop-color="#CFD3DA"/>
+              <stop offset="1" stop-color="#9AA1AD"/>
+            </radialGradient>
+            <radialGradient id="lcEye" cx="40%" cy="35%" r="70%">
+              <stop offset="0" stop-color="#D9F7DF"/>
+              <stop offset="0.45" stop-color="#6CCB98"/>
+              <stop offset="1" stop-color="#2E8B63"/>
+            </radialGradient>
+          </defs>
+          <!-- 貓尾 -->
+          <g class="tail">
+            <path d="M160 168 C215 168 218 110 190 96" fill="none" stroke="#9AA1AD" stroke-width="16" stroke-linecap="round"/>
+            <path d="M160 168 C215 168 218 110 190 96" fill="none" stroke="#C9CDD4" stroke-width="9" stroke-linecap="round"/>
+          </g>
+          <ellipse cx="110" cy="170" rx="58" ry="22" fill="#B3B8C2"/>
+          <!-- 貓耳 -->
+          <g class="ear ear-l"><path d="M54 96 Q44 44 74 22 Q112 38 124 70 Z" fill="#A4ABB6"/><path d="M68 84 Q64 52 78 40 Q98 50 106 68 Z" fill="#F2C4D0"/></g>
+          <g class="ear ear-r"><path d="M166 96 Q176 44 146 22 Q108 38 96 70 Z" fill="#A4ABB6"/><path d="M152 84 Q156 52 142 40 Q122 50 114 68 Z" fill="#F2C4D0"/></g>
+          <!-- 圓臉 -->
+          <ellipse cx="110" cy="108" rx="72" ry="58" fill="url(#lcFur)" stroke="#8B93A0" stroke-width="2.5"/>
+          <ellipse cx="78" cy="124" rx="26" ry="20" fill="#fff" opacity="0.3"/>
+          <ellipse cx="142" cy="124" rx="26" ry="20" fill="#fff" opacity="0.3"/>
+          <g class="eyes">
+            <ellipse cx="82" cy="102" rx="17" ry="20" fill="url(#lcEye)" stroke="#4B5563" stroke-width="2.2"/>
+            <ellipse cx="138" cy="102" rx="17" ry="20" fill="url(#lcEye)" stroke="#4B5563" stroke-width="2.2"/>
+            <ellipse cx="82" cy="104" rx="6" ry="14" fill="#1F2937"/>
+            <ellipse cx="138" cy="104" rx="6" ry="14" fill="#1F2937"/>
+            <circle cx="77" cy="95" r="5" fill="#fff"/><circle cx="133" cy="95" r="5" fill="#fff"/>
+          </g>
+          <path d="M101 126 Q110 121 119 126 Q114 137 110 138 Q106 137 101 126 Z" fill="#E8A0B2"/>
+          <path d="M110 138 L110 144 M110 144 Q102 153 95 146 M110 144 Q118 153 125 146" stroke="#5A626E" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+          <g stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.9">
+            <path d="M62 128 L30 122"/><path d="M62 136 L32 144"/><path d="M158 128 L190 122"/><path d="M158 136 L188 144"/>
+          </g>
+        </svg>
+      </div>
+      <h1 class="loading-title">肉墊的夢境編織</h1>
+      <p class="loading-sub">小貓正在整理毛線球<span class="dots" aria-hidden="true"></span></p>
+      <div class="paw-trail" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    </section>
+
+    <!-- 登入畫面 -->
+    <section id="authScreen" class="screen auth" hidden>
+      <div class="card cat-frame auth-card">
+        <h2 class="card-title">歡迎來到夢境</h2>
+        <p class="card-sub">銀漸層英短的大冒險</p>
+        <button id="btnAnonymous" class="btn btn-primary" type="button">🐾 匿名遊玩</button>
+        <div class="divider"><span>或使用信箱</span></div>
+        <form id="authForm" class="auth-form" autocomplete="on" novalidate>
+          <label class="field">
+            <span>電子信箱</span>
+            <input id="authEmail" type="email" name="email" inputmode="email" autocomplete="email" placeholder="you@example.com">
+          </label>
+          <label class="field">
+            <span>密碼</span>
+            <input id="authPassword" type="password" name="password" autocomplete="current-password" placeholder="至少 6 個字元">
+          </label>
+          <div class="btn-row">
+            <button id="btnEmailLogin" class="btn" type="submit">登入</button>
+            <button id="btnEmailSignup" class="btn" type="button">註冊</button>
+          </div>
+        </form>
+        <p id="authMessage" class="auth-message" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- 遊戲畫面 -->
+    <section id="gameScreen" class="screen game" hidden>
+      <header class="hud">
+        <div class="hud-chip hud-player" title="玩家">🐱 <span id="hudPlayer">Lily</span></div>
+        <div class="hud-chip" title="關卡">第 <span id="hudLevel">1</span> 關</div>
+        <div class="hud-chip" title="小魚乾">🐟 <span id="hudScore">0</span></div>
+        <div class="hud-actions">
+          <button id="btnMute" class="icon-btn" type="button" aria-label="切換音效">🔊</button>
+          <button id="btnLogout" class="icon-btn" type="button" aria-label="登出">登出</button>
+        </div>
+      </header>
+
+      <div class="maze-wrap">
+        <canvas id="mazeCanvas"></canvas>
+      </div>
+
+      <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+      <nav id="dpad" class="dpad" aria-label="方向鈕">
+        <button type="button" class="dir dir-up" data-dir="up" aria-label="上">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"/></svg>
+        </button>
+        <button type="button" class="dir dir-left" data-dir="left" aria-label="左">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <button type="button" class="dir dir-right" data-dir="right" aria-label="右">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <button type="button" class="dir dir-down" data-dir="down" aria-label="下">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>
+        </button>
+      </nav>
+    </section>
+  </main>
+
+  <!-- 消除彈窗 -->
+  <div id="matchModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="matchTitle" hidden>
+    <div class="card cat-frame modal-card match-card">
+      <h2 id="matchTitle" class="card-title">萌貓寶物消除</h2>
+      <p class="match-score">🐟 <b id="matchScore">0</b> / <b id="matchTarget">50</b></p>
+      <canvas id="matchCanvas" width="400" height="400"></canvas>
+      <p class="card-hint">點選相鄰兩格或滑動交換，湊滿目標分數就能清除障礙！</p>
+    </div>
+  </div>
+
+  <!-- 通關彈窗 -->
+  <div id="winModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="winTitle" hidden>
+    <div class="card cat-frame modal-card win-card">
+      <div class="win-paws" aria-hidden="true">🐾</div>
+      <h2 id="winTitle" class="card-title">抵達夢境之門！</h2>
+      <p id="winText" class="win-text">小貓順利通關了，準備好下一場冒險了嗎？</p>
+      <button id="btnNextLevel" class="btn btn-primary" type="button">下一關 →</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../supabase-config.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="cat-art.js"></script>
+  <script src="audio.js"></script>
+  <script src="cloud.js"></script>
+  <script src="maze.js"></script>
+  <script src="match3.js"></script>
+  <script src="main.js"></script>
+  <script>
+    // 表單 Enter 送出時交給 #btnEmailLogin 的 click，避免頁面重新整理
+    document.getElementById('authForm').addEventListener('submit', function (e) { e.preventDefault(); });
+    // PWA：註冊 Service Worker（僅 https / localhost）
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
