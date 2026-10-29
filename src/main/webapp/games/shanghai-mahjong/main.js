@@ -241,7 +241,8 @@
   function gameOver(title, body, acts) {
     var keep = acts.some(function (a) { return a.text.indexOf('復原') === 0; });
     if (!keep) S.over = true;
-    acts.push({ text: '回到選單', fn: toMenu });
+    if (!acts.some(function (a) { return a.text === '回到選單'; })) acts.push({ text: '回到選單', fn: toMenu });
+    acts.push({ text: '登出（回 goHealth 首頁）', fn: goHome });
     showDialog(title, body, acts);
     updateHud();
   }
@@ -266,7 +267,8 @@
       '<div>用時 ' + fmt(S.elapsed) + '　時間獎勵 +' + bonus + '</div>' +
       '<div>失誤 ' + S.mistakes + ' 次' + (isBest ? '　🏆 新紀錄' : '') + '</div>', [
       { text: '再玩一次', primary: true, fn: function () { startGame(); } },
-      { text: '更換牌型', fn: toMenu }
+      { text: '更換牌型', fn: toMenu },
+      { text: '登出（回 goHealth 首頁）', fn: goHome }
     ]);
   }
 
@@ -345,6 +347,11 @@
     if (first) first.focus();
   }
   function closeDialog() { el.dialog.hidden = true; }
+
+  function goHome() {
+    clearInterval(tickId);
+    location.href = '../../index.html';
+  }
 
   function toMenu() {
     clearInterval(tickId);
