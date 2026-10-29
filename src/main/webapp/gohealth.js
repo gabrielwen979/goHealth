@@ -1330,17 +1330,25 @@ function renderDayPicker() {
       : holidayName.startsWith("臺灣光復")
         ? "光復節"
         : holidayName;
-    const smallLabel = isVegetarianDay
-      ? `${lunarLabel}・${holidayName ? shortHolidayName : "蛋奶素"}`
-      : holidayName
-        ? shortHolidayName
-        : isWeekend
-          ? "週末"
-          : "午晚餐";
+    const calendarNotes = [
+      isVegetarianDay
+        ? `<span class="menu-day-note lunar-note" data-short-label="${lunarLabel}素">${lunarLabel}・素</span>`
+        : "",
+      holidayName
+        ? `<span class="menu-day-note holiday-note" data-short-label="${escapeHtml(shortHolidayName.slice(0, 2))}">${escapeHtml(shortHolidayName)}</span>`
+        : "",
+      isWeekend && !holidayName
+        ? '<span class="menu-day-note weekend-note">週末</span>'
+        : "",
+    ].filter(Boolean).join("");
+    const notes = calendarNotes ||
+      '<span class="menu-day-note meal-note">午晚餐</span>';
     return `<button class="${classes}" type="button" data-menu-date="${dateKey}" aria-pressed="${isSelected}" aria-label="${month + 1} 月 ${day} 日${dayLabel ? `，${dayLabel}` : ""}：${escapeHtml(mealNames)}"${holidayName ? ` title="${escapeHtml(holidayName)}"` : ""}>
-      <span>${["日", "一", "二", "三", "四", "五", "六"][date.getDay()]}</span>
-      <strong>${String(day).padStart(2, "0")}</strong>
-      <small>${escapeHtml(smallLabel)}</small>
+      <span class="menu-day-date">
+        <span class="menu-day-weekday">週${["日", "一", "二", "三", "四", "五", "六"][date.getDay()]}</span>
+        <strong>${String(day).padStart(2, "0")}</strong>
+      </span>
+      <span class="menu-day-notes">${notes}</span>
     </button>`;
   });
   dayPicker.innerHTML = [...blankDays, ...calendarDays].join("");

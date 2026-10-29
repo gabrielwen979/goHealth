@@ -6164,3 +6164,319 @@ html[data-theme="light"] .weather-day::before {
     animation: none !important;
   }
 }
+
+.day-picker-wrap:has(.menu-weekdays) .day-picker {
+  align-items: stretch;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .day-button {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(38px, 0.62fr) minmax(0, 1fr);
+  align-items: center;
+  justify-items: stretch;
+  gap: 8px;
+  min-height: 76px;
+  padding: 9px 10px;
+  text-align: left;
+}
+
+.menu-day-date {
+  display: grid;
+  justify-items: start;
+  gap: 3px;
+  min-width: 0;
+  line-height: 1;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .menu-day-date .menu-day-weekday {
+  color: #a7b6b0;
+  font-size: 9px;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .menu-day-date strong {
+  color: #e7f0ed;
+  font-size: 20px;
+  line-height: 1.15;
+}
+
+.menu-day-notes {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .menu-day-note {
+  display: inline-block;
+  max-width: 100%;
+  padding: 4px 6px;
+  overflow: hidden;
+  border: 1px solid #42544e;
+  border-radius: 999px;
+  background: #1b2825;
+  color: #c5d2cb;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .menu-day-note.lunar-note {
+  border-color: #687f4e;
+  background: #293923;
+  color: #e0efa8;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .menu-day-note.holiday-note {
+  border-color: #87546a;
+  background: #3a2531;
+  color: #ffc0d0;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .menu-day-note.weekend-note {
+  border-color: #624858;
+  background: #30232e;
+  color: #e8b3c5;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .menu-day-note.meal-note {
+  border-color: #344b45;
+  background: #182320;
+  color: #9fb3a8;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .day-button.active .menu-day-date .menu-day-weekday,
+.day-picker-wrap:has(.menu-weekdays) .day-button.active .menu-day-date strong {
+  color: #f5fff8;
+  text-shadow: none;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .day-button.active .menu-day-note {
+  border-color: #ffffff75;
+  background: #ffffff20;
+  color: #fff;
+  text-shadow: none;
+}
+
+.day-picker-wrap:has(.menu-weekdays) .menu-calendar-empty {
+  min-height: 76px;
+}
+
+@media (max-width: 700px) {
+  .day-picker-wrap:has(.menu-weekdays) .day-picker {
+    gap: 4px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .day-button {
+    grid-template-columns: minmax(28px, 0.72fr) minmax(0, 1fr);
+    gap: 4px;
+    min-height: 66px;
+    padding: 6px 5px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-date .menu-day-weekday {
+    font-size: 7px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-date strong {
+    font-size: 16px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-notes {
+    gap: 3px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-note {
+    padding: 3px 4px;
+    font-size: 6px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-calendar-empty {
+    min-height: 66px;
+  }
+}
+
+@media (max-width: 580px) {
+  .day-picker-wrap:has(.menu-weekdays) .day-button.weekend-day::before,
+  .day-picker-wrap:has(.menu-weekdays) .day-button.national-holiday-day::before,
+  .day-picker-wrap:has(.menu-weekdays) .day-button.lunar-vegetarian-day::after {
+    display: none;
+    content: none;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-note.weekend-note,
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-note.meal-note {
+    display: none;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-note.lunar-note,
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-note.holiday-note {
+    font-size: 0 !important;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-note.lunar-note::after,
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-note.holiday-note::after {
+    content: attr(data-short-label);
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 420px) {
+  .day-picker-wrap:has(.menu-weekdays) .day-picker {
+    gap: 2px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .day-button {
+    grid-template-columns: minmax(18px, 0.62fr) minmax(0, 1fr);
+    gap: 2px;
+    min-height: 60px;
+    padding: 5px 2px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-date .menu-day-weekday {
+    font-size: 6px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-date strong {
+    font-size: 14px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-note {
+    padding: 1px 2px;
+    font-size: 0;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-note.lunar-note::after,
+  .day-picker-wrap:has(.menu-weekdays) .menu-day-note.holiday-note::after {
+    font-size: 6px;
+  }
+
+  .day-picker-wrap:has(.menu-weekdays) .menu-calendar-empty {
+    min-height: 60px;
+  }
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) {
+  border-color: #d3dce8;
+  border-radius: 18px;
+  background: #e8edf5a6;
+  box-shadow: inset 0 1px #ffffffc9;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .menu-weekdays {
+  color: #586575;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button {
+  border-color: #d7dfea;
+  background: #f5f7fbbd;
+  box-shadow: 0 4px 12px #25344a0c, inset 0 1px #ffffff;
+  color: #283445;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button:hover {
+  border-color: #9caec6;
+  background: #ffffffed;
+  box-shadow: 0 7px 16px #25344a18, inset 0 1px #fff;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button .menu-day-date .menu-day-weekday {
+  color: #647184;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button .menu-day-date strong {
+  color: #263345;
+  text-shadow: none;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .menu-day-note {
+  border-color: #d5dce7;
+  background: #ffffffc7;
+  color: #475365;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.lunar-note {
+  border-color: #c5d4a9;
+  background: #edf4df;
+  color: #4a6128;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.holiday-note {
+  border-color: #e2bdca;
+  background: #faeaf0;
+  color: #8a3c59;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.weekend-note {
+  border-color: #e1cbd5;
+  background: #f7edf2;
+  color: #855267;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.meal-note {
+  border-color: #d8e0e8;
+  background: #eef2f6;
+  color: #667387;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.lunar-vegetarian-day {
+  border-color: #c4d4b0;
+  background: linear-gradient(145deg, #f3f7eaf2, #eaf1e4f2);
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.lunar-vegetarian-day .menu-day-date .menu-day-weekday {
+  color: #566a43;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.lunar-vegetarian-day .menu-day-date strong {
+  color: #34492e;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.weekend-day:not(.lunar-vegetarian-day) {
+  border-color: #e3c9d4;
+  background: linear-gradient(145deg, #fff8f9, #f7edf2);
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.national-holiday-day {
+  border-color: #e3bdca;
+  background: linear-gradient(145deg, #fff6f8, #f6e8ed);
+  box-shadow: 0 4px 14px #9b536918, inset 0 1px #fff;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.weekend-day.lunar-vegetarian-day:not(.national-holiday-day) {
+  border-color: #d3c4cf;
+  background: linear-gradient(145deg, #fbf2f6 0 48%, #eef4e8 52% 100%);
+  box-shadow: 0 4px 14px #70536a12, inset 0 1px #fff;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.lunar-vegetarian-day.national-holiday-day {
+  border-color: #dfc7c1;
+  background: linear-gradient(145deg, #fbf0f3 0 48%, #eef4e8 52% 100%);
+  box-shadow: 0 4px 14px #8e526018, inset 0 1px #fff;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.active,
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.lunar-vegetarian-day.active,
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.weekend-day.active,
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.national-holiday-day.active {
+  border-color: #43856e;
+  background: linear-gradient(140deg, #438c70, #32735f);
+  box-shadow: 0 8px 18px #2c71552e, inset 0 1px #ffffff64;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.lunar-vegetarian-day.national-holiday-day.active {
+  background: linear-gradient(135deg, #438c70 0 48%, #32735f 52% 100%);
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.active .menu-day-date .menu-day-weekday,
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.active .menu-day-date strong {
+  color: #fff;
+}
+
+html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.today {
+  outline-color: #548b9b;
+}
