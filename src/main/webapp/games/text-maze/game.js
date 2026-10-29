@@ -48,7 +48,6 @@ const emailInput = document.querySelector("#emailInput");
 const passwordInput = document.querySelector("#passwordInput");
 const signInButton = document.querySelector("#signInButton");
 const signUpButton = document.querySelector("#signUpButton");
-const anonymousButton = document.querySelector("#anonymousButton");
 const signOutButton = document.querySelector("#signOutButton");
 const installButton = document.querySelector("#installButton");
 const matchDialog = document.querySelector("#matchDialog");
@@ -180,16 +179,14 @@ function updateAccountUI(session) {
     sessionLabel.textContent = "離線遊玩";
     signInButton.hidden = false;
     signUpButton.hidden = false;
-    anonymousButton.hidden = false;
     signOutButton.hidden = true;
     syncIndicator.classList.remove("is-online", "is-error");
     return;
   }
-  const identity = email || (session.user.is_anonymous ? "匿名玩家" : "已登入玩家");
+  const identity = email || "已登入玩家";
   sessionLabel.textContent = identity;
   signInButton.hidden = true;
   signUpButton.hidden = true;
-  anonymousButton.hidden = true;
   signOutButton.hidden = false;
   syncIndicator.classList.add("is-online");
   syncIndicator.classList.remove("is-error");
@@ -762,15 +759,17 @@ document.addEventListener("keydown", (event) => {
 matchBoardElement.addEventListener("click", onMatchBoardClick);
 document.querySelector("#closeMatchButton").addEventListener("click", () => matchDialog.close());
 document.querySelector("#closeRiddleButton").addEventListener("click", () => riddleDialog.close());
-document.querySelector(".answer-list").addEventListener("click", (event) => {
-  const answerButton = event.target.closest("[data-answer]");
-  if (answerButton) void answerRiddle(answerButton.dataset.answer);
-});
+const answerListEl = document.querySelector(".answer-list");
+if (answerListEl) {
+  answerListEl.addEventListener("click", (event) => {
+    const answerButton = event.target.closest("[data-answer]");
+    if (answerButton) void answerRiddle(answerButton.dataset.answer);
+  });
+}
 document.querySelector("#resetButton").addEventListener("click", () => void resetGame());
 document.querySelector("#playAgainButton").addEventListener("click", () => void resetGame());
 authForm.addEventListener("submit", (event) => void signInWithPassword(event));
 signUpButton.addEventListener("click", () => void signUpWithPassword());
-anonymousButton.addEventListener("click", () => void signInAnonymously());
 signOutButton.addEventListener("click", () => void signOut());
 
 window.addEventListener("beforeinstallprompt", (event) => {
