@@ -6317,6 +6317,42 @@ html[data-theme="light"] .weather-day::before {
   .day-picker-wrap:has(.menu-weekdays) .menu-day-note.holiday-note {
     font-size: 0 !important;
   }
+}
+
+html[data-theme="light"] .month-switch {
+  border-color: #d6deea;
+  background: linear-gradient(135deg, #ffffffc9, #eaf0f8b8 58%, #f5eefaad);
+  box-shadow: 0 8px 22px #26354a18, inset 0 1px #ffffffed;
+  backdrop-filter: blur(16px) saturate(145%);
+  -webkit-backdrop-filter: blur(16px) saturate(145%);
+}
+
+html[data-theme="light"] .month-switch strong {
+  color: #35445a;
+}
+
+html[data-theme="light"] .month-switch .month-button {
+  animation: none;
+}
+
+html[data-theme="light"] .month-switch .month-button:not(.month-current) {
+  border-color: #d0e0d7;
+  background: linear-gradient(135deg, #ffffffed, #e8f4eeeb);
+  box-shadow: 0 4px 12px #24364a14, inset 0 1px #ffffff;
+  color: #34745d;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .month-switch .month-button:not(.month-current):hover {
+  border-color: #8db9a2;
+  background: linear-gradient(135deg, #fff, #dff2e7);
+  box-shadow: 0 6px 16px #2b705222, inset 0 1px #fff;
+  color: #245c47;
+}
+
+html[data-theme="light"] .month-switch .month-button:focus-visible {
+  outline: 3px solid #78ad94;
+  outline-offset: 3px;
 
   .day-picker-wrap:has(.menu-weekdays) .menu-day-note.lunar-note::after,
   .day-picker-wrap:has(.menu-weekdays) .menu-day-note.holiday-note::after {
