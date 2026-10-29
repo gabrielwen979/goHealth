@@ -12,6 +12,14 @@ const MAZE_ROWS = [
   "###########",
 ];
 
+// 開發者模式：允許測試帳號直接登入（不需郵件驗證）
+const DEV_MODE = true;
+const DEV_TEST_ACCOUNTS = {
+  "test1@example.com": "test1password",
+  "test2@example.com": "test2password",
+  "test3@example.com": "test3password",
+};
+
 const MAZE_WIDTH = MAZE_ROWS[0].length;
 const MAZE_HEIGHT = MAZE_ROWS.length;
 const CHEST = { x: 6, y: 5 };
@@ -634,14 +642,35 @@ async function saveProgress() {
 
 async function signInWithPassword(event) {
   event.preventDefault();
-  if (!supabaseClient) {
-    showMessage(accountMessage, "尚未設定 Supabase。請先填寫 supabase-config.js 的專案 URL 與公開金鑰。", "error");
-    return;
-  }
   const email = emailInput.value.trim();
   const password = passwordInput.value;
   if (!email || !password) {
     showMessage(accountMessage, "請輸入 Email 和密碼。", "error");
+    return;
+  }
+  
+  // 開發者模式：允許測試帳號直接登入
+  if (DEV_MODE && DEV_TEST_ACCOUNTS[email] === password) {
+    currentSession = { user: { id: `dev-${email}`, email } };
+    currentUserId = `dev-${email}`;
+    updateAccountUI(currentSession);
+    setGameReady(true);
+    
+    // 顯示遊戲畫面
+    authForm.style.display = "none";
+    document.querySelector(".game-panel").style.display = "block";
+    document.querySelector(".intro").style.display = "block";
+    gameState = readLocalSave(currentUserId) || createInitialState();
+    renderMaze();
+    renderBoard();
+    
+    showMessage(accountMessage, `✓ 開發模式登入成功（${email}），進度會保存在本機。`, "success");
+    return;
+  }
+  
+  // 正式環境：使用 Supabase
+  if (!supabaseClient) {
+    showMessage(accountMessage, "尚未設定 Supabase。請先填寫 supabase-config.js 的專案 URL 與公開金鑰。", "error");
     return;
   }
   signInButton.disabled = true;
@@ -793,6 +822,7 @@ async function initializeGame() {
     && /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(config.url)
     && config.publishableKey
     && !config.publishableKey.startsWith("YOUR_");
+  
   if (isConfigured && window.supabase?.createClient) {
     try {
       supabaseClient = window.supabase.createClient(config.url, config.publishableKey);
@@ -831,6 +861,18 @@ async function initializeGame() {
       });
     } catch (error) {
       console.error("Could not initialize Supabase for the text maze.", error);
+      
+      // Supabase 失敗時，啟用開發模式
+      if (DEV_MODE) {
+        setGameReady(true);
+        authForm.style.display = "block";
+        document.querySelector(".game-panel").style.display = "none";
+        document.querySelector(".intro").style.display = "none";
+        syncIndicator.classList.add("is-offline");
+        showMessage(accountMessage, `✓ 開發模式已啟用。使用測試帳號登入（test1@example.com / test1password）`, "success");
+        return;
+      }
+      
       setGameReady(true);
       authForm.style.display = "block";
       document.querySelector(".game-panel").style.display = "none";
@@ -839,6 +881,17 @@ async function initializeGame() {
       showMessage(accountMessage, `❌ Supabase 連線失敗，無法啟用遊戲：${error.message}`, "error");
     }
   } else {
+    // 未設定 Supabase，啟用開發模式
+    if (DEV_MODE) {
+      setGameReady(true);
+      authForm.style.display = "block";
+      document.querySelector(".game-panel").style.display = "none";
+      document.querySelector(".intro").style.display = "none";
+      syncIndicator.classList.add("is-offline");
+      showMessage(accountMessage, `✓ 開發模式已啟用。使用測試帳號登入（test1@example.com / test1password）`, "success");
+      return;
+    }
+    
     setGameReady(true);
     authForm.style.display = "block";
     document.querySelector(".game-panel").style.display = "none";
