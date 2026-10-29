@@ -30,6 +30,8 @@ jobs:
           mkdir -p _site/images
           cp src/main/webapp/index.html src/main/webapp/styles.css src/main/webapp/gohealth.js src/main/webapp/hiking-trails.js src/main/webapp/monthly-recipes.js src/main/webapp/taiwan-holidays.js src/main/webapp/weather.js src/main/webapp/supabase-config.js _site/
           cp -R src/main/webapp/images/. _site/images/
+          mkdir -p _site/games
+          cp -R src/main/webapp/games/. _site/games/
       - name: Upload website files
         uses: actions/upload-pages-artifact@v3
         with:
