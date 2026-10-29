@@ -6516,3 +6516,31 @@ html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.active
 html[data-theme="light"] .day-picker-wrap:has(.menu-weekdays) .day-button.today {
   outline-color: #548b9b;
 }
+
+html[data-theme="light"] .kitchen-tip {
+  border-color: #bed9c5;
+  background: linear-gradient(135deg, #edf7ef, #e5f1e8);
+  box-shadow: 0 5px 14px #2e694b12, inset 0 1px #ffffffd9;
+}
+
+html[data-theme="light"] .kitchen-tip strong {
+  color: #285d3b;
+}
+
+html[data-theme="light"] .kitchen-tip p {
+  color: #405b48;
+}
+
+html[data-theme="light"] .freshness-tip {
+  border-color: #e8d1ad;
+  background: linear-gradient(135deg, #fff5e6, #f8eddd);
+  box-shadow: 0 5px 14px #79552a12, inset 0 1px #ffffffd9;
+}
+
+html[data-theme="light"] .freshness-tip strong {
+  color: #7a4d17;
+}
+
+html[data-theme="light"] .freshness-tip p {
+  color: #5b4935;
+}
