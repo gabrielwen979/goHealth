@@ -561,8 +561,7 @@ async function loadProgressForSession(session) {
     authForm.style.display = "none";
     document.querySelector(".game-panel").style.display = "block";
     document.querySelector(".intro").style.display = "block";
-    renderMaze();
-    renderBoard();
+    renderGame();
     
     if (remoteProgress) {
       showMessage(accountMessage, "已從 Supabase 載入你的冒險進度。", "success");
@@ -587,8 +586,7 @@ async function loadProgressForSession(session) {
     authForm.style.display = "none";
     document.querySelector(".game-panel").style.display = "block";
     document.querySelector(".intro").style.display = "block";
-    renderMaze();
-    renderBoard();
+    renderGame();
     
     syncIndicator.classList.remove("is-online");
     syncIndicator.classList.add("is-error");
@@ -661,8 +659,7 @@ async function signInWithPassword(event) {
     document.querySelector(".game-panel").style.display = "block";
     document.querySelector(".intro").style.display = "block";
     gameState = readLocalSave(currentUserId) || createInitialState();
-    renderMaze();
-    renderBoard();
+    renderGame();
     
     showMessage(accountMessage, `✓ 開發模式登入成功（${email}），進度會保存在本機。`, "success");
     return;
@@ -823,80 +820,67 @@ async function initializeGame() {
     && config.publishableKey
     && !config.publishableKey.startsWith("YOUR_");
   
+  setGameReady(true);
+  authForm.style.display = "block";
+  document.querySelector(".game-panel").style.display = "none";
+  document.querySelector(".intro").style.display = "none";
+  syncIndicator.classList.add("is-offline");
+  
   if (isConfigured && window.supabase?.createClient) {
     try {
       supabaseClient = window.supabase.createClient(config.url, config.publishableKey);
       const { data, error } = await supabaseClient.auth.getSession();
       if (error) throw error;
       
-      // 如果未登入，禁止遊戲
-      if (!data.session) {
-        setGameReady(true);
-        authForm.style.display = "block";
-        document.querySelector(".game-panel").style.display = "none";
-        document.querySelector(".intro").style.display = "none";
-        showMessage(accountMessage, "❌ 請先登入才能開始遊戲。");
-        syncIndicator.classList.add("is-offline");
+      // 如果已登入，載入遊戲
+      if (data.session) {
+        await loadProgressForSession(data.session);
         authEventsReady = true;
         supabaseClient.auth.onAuthStateChange((_event, session) => {
           if (!authEventsReady) return;
-          if (session) {
+          if (!session) {
             location.reload();
+          } else {
+            window.setTimeout(() => {
+              void loadProgressForSession(session);
+            }, 0);
           }
         });
         return;
       }
       
-      await loadProgressForSession(data.session);
+      // 未登入，顯示開發模式提示
+      if (DEV_MODE) {
+        showMessage(accountMessage, `✓ 開發模式已啟用。測試帳號：test1@example.com / test1password`, "success");
+      } else {
+        showMessage(accountMessage, "❌ 請先登入才能開始遊戲。");
+      }
+      
       authEventsReady = true;
       supabaseClient.auth.onAuthStateChange((_event, session) => {
         if (!authEventsReady) return;
-        if (!session) {
+        if (session) {
           location.reload();
-        } else {
-          window.setTimeout(() => {
-            void loadProgressForSession(session);
-          }, 0);
         }
       });
     } catch (error) {
       console.error("Could not initialize Supabase for the text maze.", error);
       
-      // Supabase 失敗時，啟用開發模式
+      // Supabase 失敗，啟用開發模式
       if (DEV_MODE) {
-        setGameReady(true);
-        authForm.style.display = "block";
-        document.querySelector(".game-panel").style.display = "none";
-        document.querySelector(".intro").style.display = "none";
-        syncIndicator.classList.add("is-offline");
-        showMessage(accountMessage, `✓ 開發模式已啟用。使用測試帳號登入（test1@example.com / test1password）`, "success");
-        return;
+        showMessage(accountMessage, `✓ 開發模式已啟用（Supabase 離線）。測試帳號：test1@example.com / test1password`, "success");
+      } else {
+        showMessage(accountMessage, `❌ Supabase 連線失敗：${error.message}`, "error");
+        syncIndicator.classList.add("is-error");
       }
-      
-      setGameReady(true);
-      authForm.style.display = "block";
-      document.querySelector(".game-panel").style.display = "none";
-      document.querySelector(".intro").style.display = "none";
-      syncIndicator.classList.add("is-error");
-      showMessage(accountMessage, `❌ Supabase 連線失敗，無法啟用遊戲：${error.message}`, "error");
     }
   } else {
     // 未設定 Supabase，啟用開發模式
     if (DEV_MODE) {
-      setGameReady(true);
-      authForm.style.display = "block";
-      document.querySelector(".game-panel").style.display = "none";
-      document.querySelector(".intro").style.display = "none";
-      syncIndicator.classList.add("is-offline");
-      showMessage(accountMessage, `✓ 開發模式已啟用。使用測試帳號登入（test1@example.com / test1password）`, "success");
-      return;
+      showMessage(accountMessage, `✓ 開發模式已啟用。測試帳號：test1@example.com / test1password`, "success");
+    } else {
+      showMessage(accountMessage, "❌ 遊戲需要登入。請在下方輸入帳號密碼。");
     }
-    
-    setGameReady(true);
-    authForm.style.display = "block";
-    document.querySelector(".game-panel").style.display = "none";
-    document.querySelector(".intro").style.display = "none";
-    showMessage(accountMessage, "❌ 遊戲需要登入。請在下方輸入帳號密碼。");
   }
 }
 
