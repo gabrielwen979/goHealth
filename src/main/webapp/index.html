@@ -23,7 +23,7 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20261029-8650013" />
+    <link rel="stylesheet" href="styles.css?v=20261029-hehuan" />
     <link
       rel="stylesheet"
       href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css"
@@ -104,6 +104,18 @@
           data-tab-target="menu"
         >
           月菜單
+        </button>
+        <button
+          class="nav-tab"
+          id="travelTab"
+          type="button"
+          role="tab"
+          aria-controls="travel"
+          aria-selected="false"
+          tabindex="-1"
+          data-tab-target="travel"
+        >
+          景點交通
         </button>
         <button
           class="nav-tab"
@@ -529,6 +541,115 @@
             照片為食材與料理情境參考，非每道食譜的實際成品拍攝；食材內容與份量請以文字菜單為準。
           </p>
         </div>
+      </section>
+
+      <section class="travel-section section-wrap" id="travel" data-tab-panel="travel" role="tabpanel" aria-labelledby="travelTab" tabindex="0" hidden>
+        <div class="travel-hero">
+          <div class="travel-hero-copy">
+            <p class="eyebrow">MOUNTAIN TRIP · ROAD & LIVE CAMERAS</p>
+            <h2>合歡山行前資訊，<br /><em>先看路況，再安心出發。</em></h2>
+            <p>整理合歡山周邊即時影像入口、交通方式與行前檢查。山區天候和道路管制變化快速，出發前請以主管機關最新公告為準。</p>
+            <div class="travel-hero-actions">
+              <a class="button button-dark" href="https://www.google.com/maps/dir/?api=1&amp;destination=%E6%AD%A6%E5%B6%BA" target="_blank" rel="noopener noreferrer">規劃前往武嶺 <span aria-hidden="true">↗</span></a>
+              <a class="travel-text-link" href="https://168.thb.gov.tw/roadcctv" target="_blank" rel="noopener noreferrer">查看公路即時影像 <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+          <div class="travel-location-card">
+            <span class="travel-location-icon" aria-hidden="true">⛰</span>
+            <span class="eyebrow">DESTINATION</span>
+            <strong>合歡山・武嶺</strong>
+            <span>南投縣仁愛鄉／花蓮縣秀林鄉</span>
+            <a href="https://www.google.com/maps/search/?api=1&amp;query=%E6%AD%A6%E5%B6%BA" target="_blank" rel="noopener noreferrer">在地圖查看位置 <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+
+        <nav class="travel-section-nav" aria-label="合歡山行前資訊">
+          <a href="#travel-cameras">即時影像</a>
+          <a href="#travel-routes">交通方式</a>
+          <a href="#travel-checklist">行前檢查</a>
+        </nav>
+
+        <section class="travel-content-section" id="travel-cameras" aria-labelledby="travelCamerasTitle">
+          <div class="travel-section-heading">
+            <div>
+              <p class="eyebrow">LIVE CCTV & ROAD STATUS</p>
+              <h3 id="travelCamerasTitle">即時影像與路況入口</h3>
+            </div>
+            <span class="travel-live-note"><span aria-hidden="true"></span>連結至即時來源</span>
+          </div>
+          <p class="travel-section-intro">影像由各主管機關或服務平台維護，本頁不轉存串流。點選後可查看台14甲線、國道六號沿線或合歡山周邊的最新畫面；攝影機是否在線及更新時間以來源頁面為準。</p>
+          <div class="travel-camera-grid">
+            <article class="travel-camera-card">
+              <div class="travel-camera-visual travel-camera-provincial" aria-hidden="true"><span>台14甲線</span><strong>公路即時影像</strong></div>
+              <div class="travel-camera-body">
+                <span class="travel-source-badge">公路主管機關</span>
+                <h4>合歡山・台14甲線</h4>
+                <p>前往清境、武嶺與合歡山前，查看公路局即時影像及道路資訊。</p>
+                <a href="https://168.thb.gov.tw/roadcctv" target="_blank" rel="noopener noreferrer">開啟公路即時影像 <span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
+            <article class="travel-camera-card">
+              <div class="travel-camera-visual travel-camera-freeway" aria-hidden="true"><span>國道六號</span><strong>國道即時影像</strong></div>
+              <div class="travel-camera-body">
+                <span class="travel-source-badge">高速公路局</span>
+                <h4>國道六號・埔里方向</h4>
+                <p>由西部前往埔里可先檢查國道六號路況、事件與沿線攝影機。</p>
+                <a href="https://1968.freeway.gov.tw/roadcctv" target="_blank" rel="noopener noreferrer">開啟國道即時影像 <span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
+            <article class="travel-camera-card">
+              <div class="travel-camera-visual travel-camera-mountain" aria-hidden="true"><span>合歡山周邊</span><strong>旅遊即時影像</strong></div>
+              <div class="travel-camera-body">
+                <span class="travel-source-badge travel-source-community">旅遊影像整理</span>
+                <h4>合歡山即時影像總覽</h4>
+                <p>由旅遊影像平台彙整的合歡山視角；若畫面無法播放，請改看官方道路資訊。</p>
+                <a href="https://www.twipcam.com/travel/hehuanshan" target="_blank" rel="noopener noreferrer">前往影像總覽 <span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="travel-content-section" id="travel-routes" aria-labelledby="travelRoutesTitle">
+          <div class="travel-section-heading">
+            <div>
+              <p class="eyebrow">GETTING THERE</p>
+              <h3 id="travelRoutesTitle">交通方式</h3>
+            </div>
+          </div>
+          <div class="travel-route-grid">
+            <article class="travel-route-card">
+              <span class="travel-route-number">01 · 自行開車</span>
+              <h4>埔里 → 霧社 → 清境 → 武嶺</h4>
+              <p>常見西側行車方向為國道六號至埔里，接台14線經霧社，再接台14甲線往清境、武嶺。實際行車時間會受天候、車流與管制影響。</p>
+              <a href="https://www.google.com/maps/dir/?api=1&amp;origin=%E5%9F%94%E9%87%8C&amp;destination=%E6%AD%A6%E5%B6%BA" target="_blank" rel="noopener noreferrer">開啟行車導航 <span aria-hidden="true">↗</span></a>
+            </article>
+            <article class="travel-route-card">
+              <span class="travel-route-number">02 · 大眾運輸</span>
+              <h4>先查埔里、清境方向班次</h4>
+              <p>先確認南投客運往清境方向的班次與轉乘安排。合歡山高山路段服務可能有限或依日期調整，請向業者確認當日是否有可到達目的地的班車或接駁。</p>
+              <a href="https://www.taiwanbus.tw/ebuspage/Default.aspx?lan=C" target="_blank" rel="noopener noreferrer">查詢公路客運資訊 <span aria-hidden="true">↗</span></a>
+            </article>
+          </div>
+          <p class="travel-source-note">道路資訊：<a href="https://168.thb.gov.tw/" target="_blank" rel="noopener noreferrer">公路局公路資訊服務網</a>、<a href="https://1968.freeway.gov.tw/" target="_blank" rel="noopener noreferrer">高速公路 1968</a>。班次與道路狀況可能變動，請以出發當日主管機關及客運業者公告為準。</p>
+        </section>
+
+        <section class="travel-checklist" id="travel-checklist" aria-labelledby="travelChecklistTitle">
+          <div>
+            <p class="eyebrow">BEFORE YOU GO</p>
+            <h3 id="travelChecklistTitle">高山行前檢查</h3>
+            <p>合歡山海拔高，氣溫、風勢與能見度可能和山下差異很大。請留意身體狀況，勿只依平地天氣決定是否出發。</p>
+          </div>
+          <ul>
+            <li><strong>道路與管制</strong><span>確認台14甲線最新通行、施工、降雪或管制公告。</span></li>
+            <li><strong>天氣與裝備</strong><span>查看山區預報，備妥保暖、防風雨衣物與飲水。</span></li>
+            <li><strong>客運與接駁</strong><span>核對去回程班次、預約規定與末班車時間。</span></li>
+            <li><strong>身體狀況</strong><span>若有頭痛、噁心、暈眩或呼吸不適，停止上升並儘速下撤求助。</span></li>
+          </ul>
+          <p class="travel-official-links">
+            <a href="https://www.taroko.gov.tw/" target="_blank" rel="noopener noreferrer">太魯閣國家公園公告 <span aria-hidden="true">↗</span></a>
+            <a href="https://168.thb.gov.tw/" target="_blank" rel="noopener noreferrer">公路局道路公告 <span aria-hidden="true">↗</span></a>
+          </p>
+        </section>
       </section>
 
       <section class="weight-section section-wrap" id="weight" data-tab-panel="profile" role="tabpanel" aria-labelledby="profileTab" tabindex="0" hidden>
