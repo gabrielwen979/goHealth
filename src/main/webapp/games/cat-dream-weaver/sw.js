@@ -1,7 +1,7 @@
 /* 《肉墊的夢境編織》Service Worker：快取遊戲殼，讓遊戲可離線開啟。 */
 'use strict';
 
-const CACHE = 'cat-dream-weaver-v5';
+const CACHE = 'cat-dream-weaver-v6';
 
 // 遊戲殼（相對於本檔所在目錄）；個別檔案失敗不影響整體安裝
 const SHELL = [

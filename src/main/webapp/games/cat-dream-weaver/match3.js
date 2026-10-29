@@ -35,8 +35,9 @@
 
   // 特殊寶物種類（tile.special）
   var SP_NONE = 0;
-  var SP_ROW = 1; // 橫向清除：觸發時清掉整列
-  var SP_COL = 2; // 直向清除：觸發時清掉整欄
+  var SP_ROW = 1; // 炸藥球：觸發時十字爆破，清掉整列與整欄（上下左右）
+  var SP_COL = 2; // 保留舊值（不再產生；若出現視同炸藥球）
+  var BOMB_CHANCE_3 = 0.22; // 普通三連消也有機率留下炸藥球
   var SP_RAINBOW = 3; // 彩虹：與相鄰寶石交換，清掉盤面上所有同種寶石
 
   // 障礙種類（tile.block）
@@ -103,12 +104,12 @@
   var TARGET_PLATEAU = 640;
   var TARGET_STEP = 4;
 
-  // 步數曲線：第 1 關 20 步，之後逐步縮減至下限
+  // 步數曲線：第 1 關 40 步（原 20 步的兩倍），之後逐步縮減至下限
   function MOVES_TABLE(L) {
-    return Math.max(MOVES_FLOOR, 20 - Math.floor((L - 1) * MOVES_SLOPE));
+    return Math.max(MOVES_FLOOR, 40 - Math.floor((L - 1) * MOVES_SLOPE));
   }
-  var MOVES_FLOOR = 15;
-  var MOVES_SLOPE = 0.45;
+  var MOVES_FLOOR = 30;
+  var MOVES_SLOPE = 0.9;
 
   // ───────────────────────── 純邏輯：消除判定 ─────────────────────────
 
@@ -676,6 +677,14 @@
     for (i = 0; i < runs.length; i++) {
       var run = runs[i];
       if (run.cells.length < 4) {
+        // 三連消：有機率在中間格留下炸藥球（炸藥球出現得更頻繁）
+        if (run.cells.length === 3 && (opt.noRandom ? false : Math.random() < BOMB_CHANCE_3)) {
+          var mid = run.cells[1];
+          if (grid[mid.r][mid.c].special === SP_NONE && !spawnMap[keyOf(mid.r, mid.c)]) {
+            spawnMap[keyOf(mid.r, mid.c)] = SP_ROW;
+            spawns.push({ r: mid.r, c: mid.c, special: SP_ROW });
+          }
+        }
         continue;
       }
       var cands = [];
@@ -702,9 +711,26 @@
       if (!pick) {
         pick = cands[Math.min(cands.length - 1, Math.floor(run.cells.length / 2))];
       }
-      var kind = run.cells.length >= 5 ? SP_RAINBOW : (run.dir === 'h' ? SP_ROW : SP_COL);
+      var kind = run.cells.length >= 5 ? SP_RAINBOW : SP_ROW;
       spawnMap[keyOf(pick.r, pick.c)] = kind;
       spawns.push({ r: pick.r, c: pick.c, special: kind });
+    }
+
+    // L / T 形：橫直兩條連線交叉的格子必定產生炸藥球
+    for (i = 0; i < runs.length; i++) {
+      for (var j2 = i + 1; j2 < runs.length; j2++) {
+        if (runs[i].dir === runs[j2].dir) {
+          continue;
+        }
+        for (k = 0; k < runs[i].cells.length; k++) {
+          var sc = runs[i].cells[k];
+          var shared = runs[j2].cells.some(function (o) { return o.r === sc.r && o.c === sc.c; });
+          if (shared && grid[sc.r][sc.c].special === SP_NONE && !spawnMap[keyOf(sc.r, sc.c)]) {
+            spawnMap[keyOf(sc.r, sc.c)] = SP_ROW;
+            spawns.push({ r: sc.r, c: sc.c, special: SP_ROW });
+          }
+        }
+      }
     }
 
     // 特殊寶物連鎖觸發（BFS）
@@ -717,16 +743,13 @@
         continue;
       }
       var x;
-      if (cell.special === SP_ROW) {
+      if (cell.special === SP_ROW || cell.special === SP_COL) {
+        // 炸藥球：十字爆破，整列 + 整欄
         triggered++;
         beams.push({ kind: 'row', r: qr, c: qc });
-        for (x = 0; x < SIZE; x++) {
-          addCoverage(qr, x);
-        }
-      } else if (cell.special === SP_COL) {
-        triggered++;
         beams.push({ kind: 'col', r: qr, c: qc });
         for (x = 0; x < SIZE; x++) {
+          addCoverage(qr, x);
           addCoverage(x, qc);
         }
       } else if (cell.special === SP_RAINBOW) {
@@ -1518,8 +1541,18 @@
       ctx.lineWidth = Math.max(1, cell * 0.025);
       ctx.stroke();
 
+      var isBomb = t.special === SP_ROW || t.special === SP_COL;
       if (isStone) {
         drawStoneFace(cx, cy, half, t.hp);
+      } else if (isBomb && t.block === BLK_NONE) {
+        // 炸藥球：大顆 💣，左上角保留原本寶石以便辨識顏色
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#000';
+        ctx.font = Math.round(cell * 0.52 * t.scale) + 'px ' + EMOJI_FONT;
+        ctx.fillText('\uD83D\uDCA3', cx + half * 0.06, cy + half * 0.08);
+        ctx.font = Math.round(cell * 0.24 * t.scale) + 'px ' + EMOJI_FONT;
+        ctx.fillText(EMOJI[t.type], cx - half * 0.55, cy - half * 0.55);
       } else {
         // 元素 emoji（彩虹寶物用 🌈）
         ctx.font = Math.round(cell * 0.5 * t.scale) + 'px ' + EMOJI_FONT;
@@ -1529,9 +1562,6 @@
         ctx.fillText(isRainbow ? '\uD83C\uDF08' : EMOJI[t.type], cx, cy + cell * 0.03);
       }
 
-      if (t.block === BLK_NONE && (t.special === SP_ROW || t.special === SP_COL)) {
-        drawLineSpecial(cx, cy, half, t.special);
-      }
       if (t.block === BLK_NONE && t.special !== SP_NONE) {
         // 特殊寶物的呼吸光暈
         var pulse = 0.5 + 0.5 * Math.sin(clock * 0.006 + t.x * 1.3 + t.y);
@@ -1546,36 +1576,6 @@
       if (t.block === BLK_FROZEN) {
         drawFrozenOverlay(left, top, half, radius);
       }
-      ctx.restore();
-    }
-
-    /** 橫 / 直向清除寶物：在磚塊上畫一條帶箭頭的白色光帶，一眼就知道是整列或整欄 */
-    function drawLineSpecial(cx, cy, half, special) {
-      ctx.save();
-      ctx.translate(cx, cy);
-      if (special === SP_COL) {
-        ctx.rotate(Math.PI / 2);
-      }
-      var len = half * 0.86;
-      var th = Math.max(2, cell * 0.07);
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.strokeStyle = 'rgba(214,140,170,0.9)';
-      ctx.lineWidth = Math.max(1, cell * 0.02);
-      // 光帶 + 兩端箭頭
-      ctx.beginPath();
-      ctx.moveTo(-len, 0);
-      ctx.lineTo(-len + th * 2, -th * 1.6);
-      ctx.lineTo(-len + th * 2, -th * 0.5);
-      ctx.lineTo(len - th * 2, -th * 0.5);
-      ctx.lineTo(len - th * 2, -th * 1.6);
-      ctx.lineTo(len, 0);
-      ctx.lineTo(len - th * 2, th * 1.6);
-      ctx.lineTo(len - th * 2, th * 0.5);
-      ctx.lineTo(-len + th * 2, th * 0.5);
-      ctx.lineTo(-len + th * 2, th * 1.6);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
       ctx.restore();
     }
 
