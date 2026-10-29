@@ -1,0 +1,224 @@
+/* 上海麻將：莫蘭迪綠 + 金邊 */
+:root {
+  --felt: #1f3329;
+  --felt-2: #2a4637;
+  --gold: #E6D3B6;
+  --gold-d: #b89c6f;
+  --ink: #f3ece0;
+  --muted: #a9b8ae;
+  --red: #b5483c;
+  --panel: #16231d;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--felt);
+  color: var(--ink);
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 50% 30%, #35594a 0%, var(--felt) 70%),
+    var(--felt);
+}
+
+#app { height: 100%; height: 100dvh; width: 100%; position: relative; }
+[hidden] { display: none !important; }
+
+.screen { position: absolute; inset: 0; }
+
+/* 按鈕 */
+.btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--gold-d);
+  border-radius: 12px;
+  background: #ffffff10;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.btn:hover { background: #ffffff1f; }
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.btn-primary { background: linear-gradient(180deg, #ecdcc2, var(--gold-d)); color: #2a2216; border-color: var(--gold); }
+.btn-primary:hover { background: linear-gradient(180deg, #f3e6cf, #c7ab7c); }
+.btn-big { width: 100%; min-height: 56px; font-size: 20px; letter-spacing: 0.2em; }
+.btn-icon { padding: 0; width: 44px; font-size: 16px; }
+
+/* 開始畫面 */
+.start {
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: calc(16px + var(--safe-t)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l));
+}
+.start-card {
+  width: min(440px, 100%);
+  padding: 28px 22px 22px;
+  border: 2px solid var(--gold);
+  border-radius: 22px;
+  background: linear-gradient(160deg, #263f33, var(--panel));
+  box-shadow: 0 20px 50px #0008, inset 0 0 0 4px #16231d, inset 0 0 0 5px #e6d3b633;
+  text-align: center;
+}
+.logo-tile {
+  display: grid;
+  place-items: center;
+  width: 64px; height: 82px;
+  margin: 0 auto 10px;
+  border-radius: 10px;
+  border: 2px solid var(--gold);
+  background: linear-gradient(145deg, #fbf6ea, #e8dcc3);
+  box-shadow: 5px 6px 0 #2f6b4a;
+  color: var(--red);
+  font: 700 40px/1 "Noto Serif TC", "Songti TC", serif;
+}
+h1 { margin: 6px 0 4px; font-size: 34px; letter-spacing: 0.25em; color: var(--gold); }
+.subtitle { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+.field { margin-bottom: 16px; text-align: left; }
+.field-label { display: block; margin-bottom: 6px; color: var(--gold); font-size: 13px; font-weight: 700; letter-spacing: 0.1em; }
+.field-note { min-height: 1.4em; margin: 6px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.seg button {
+  min-height: 46px;
+  border: 1px solid #e6d3b655;
+  border-radius: 12px;
+  background: #ffffff0a;
+  color: var(--ink);
+  font: inherit; font-weight: 700;
+  cursor: pointer;
+}
+.seg button[aria-checked="true"] { background: var(--gold); color: #2a2216; border-color: var(--gold); }
+select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid #e6d3b666;
+  border-radius: 12px;
+  background: #0f1a15;
+  color: var(--ink);
+  font: inherit;
+}
+.rules { margin: 16px 0 6px; text-align: left; color: var(--muted); font-size: 13.5px; }
+.rules summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--gold); font-weight: 700; }
+.rules summary::before { content: "＋"; margin-right: 8px; }
+.rules[open] summary::before { content: "－"; }
+.rules ul { margin: 0; padding-left: 20px; line-height: 1.8; }
+.back-link { display: inline-block; margin-top: 8px; padding: 10px; color: var(--muted); font-size: 13px; text-decoration: none; }
+.back-link:hover { color: var(--gold); }
+
+/* 遊戲畫面 */
+.game { display: flex; flex-direction: column; padding: var(--safe-t) var(--safe-r) 0 var(--safe-l); }
+.hud {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e6d3b633;
+  background: #10190fcc;
+  background: #121d17dd;
+}
+.stat { display: flex; flex-direction: column; align-items: center; min-width: 56px; line-height: 1.2; }
+.stat-label { color: var(--muted); font-size: 11px; letter-spacing: 0.1em; }
+.stat b { color: var(--gold); font-size: 18px; font-variant-numeric: tabular-nums; }
+.stat b.warn { color: #ff8a78; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.45; } }
+
+.board-wrap {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 8px;
+  border: 3px solid var(--gold);
+  border-radius: 16px;
+  background: radial-gradient(ellipse at 50% 40%, #2f5a45, #1b3025 85%);
+  box-shadow: inset 0 0 40px #0007, 0 6px 20px #0006;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.board-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.board-wrap.hidden-board canvas { visibility: hidden; }
+
+.toast {
+  position: absolute; left: 50%; top: 12px; transform: translate(-50%, -20px);
+  max-width: 90%;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #101a15ee; border: 1px solid var(--gold);
+  color: var(--gold); font-size: 14px; font-weight: 700;
+  opacity: 0; pointer-events: none;
+  transition: opacity 180ms, transform 180ms;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+.toolbar {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+  padding: 6px 8px calc(8px + var(--safe-b));
+  background: #121d17dd;
+  border-top: 1px solid #e6d3b633;
+}
+.tool { padding: 0 4px; font-size: 14px; white-space: nowrap; }
+.count { color: var(--gold); font-variant-numeric: tabular-nums; }
+
+/* 覆蓋層 */
+.overlay {
+  position: absolute; inset: 0; z-index: 10;
+  display: grid; place-items: center;
+  padding: 16px;
+  background: #0c140fe6;
+  backdrop-filter: blur(6px);
+}
+.dialog {
+  width: min(360px, 100%);
+  padding: 24px 20px 20px;
+  border: 2px solid var(--gold);
+  border-radius: 20px;
+  background: linear-gradient(160deg, #263f33, var(--panel));
+  text-align: center;
+  box-shadow: 0 20px 50px #000a;
+}
+.dialog h2 { margin: 0 0 10px; color: var(--gold); letter-spacing: 0.15em; }
+.dialog p { margin: 0 0 14px; color: var(--muted); }
+.dialog-body { margin-bottom: 16px; line-height: 1.8; }
+.dialog-body .big { font-size: 34px; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
+.dialog-body .stars { font-size: 28px; letter-spacing: 6px; color: var(--gold); }
+.dialog-actions { display: flex; flex-direction: column; gap: 8px; }
+
+@media (min-width: 700px) {
+  .toolbar { grid-template-columns: repeat(4, minmax(120px, 160px)); justify-content: center; }
+  .board-wrap { margin: 12px 24px; }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  .hud { padding: 4px 10px; }
+  .board-wrap { margin: 4px 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stat b.warn { animation: none; }
+  .toast { transition: none; }
+}

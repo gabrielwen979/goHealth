@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>上海麻將</title>
+  <meta name="description" content="上海麻將接龍：點選兩張相同的自由牌即可消除">
+  <meta name="theme-color" content="#1f3329">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="上海麻將">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="app">
+    <!-- 開始畫面 -->
+    <section id="startScreen" class="screen start">
+      <div class="start-card">
+        <div class="logo-tile" aria-hidden="true">中</div>
+        <h1>上海麻將</h1>
+        <p class="subtitle">點選兩張相同的自由牌，將整副牌清空</p>
+
+        <div class="field">
+          <span class="field-label">難度</span>
+          <div class="seg" id="difficultyPicker" role="radiogroup" aria-label="難度">
+            <button type="button" role="radio" data-value="normal" aria-checked="true">普通</button>
+            <button type="button" role="radio" data-value="hard" aria-checked="false">困難</button>
+            <button type="button" role="radio" data-value="master" aria-checked="false">大師</button>
+          </div>
+          <p class="field-note" id="difficultyNote"></p>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="layoutSelect">牌型</label>
+          <select id="layoutSelect"></select>
+          <p class="field-note" id="bestNote"></p>
+        </div>
+
+        <button type="button" id="startBtn" class="btn btn-primary btn-big">開始遊戲</button>
+
+        <details class="rules">
+          <summary>遊戲規則</summary>
+          <ul>
+            <li>只有「自由牌」能被選取：上方沒有其他牌壓住，且左側或右側至少一邊是空的。</li>
+            <li>依序點選兩張相同的自由牌即可消除；花牌之間、季節牌之間視為同組，可互相消除。</li>
+            <li>再點一次已選的牌可取消選取。</li>
+            <li>3 秒內連續消除可獲得連擊加分；通關時依剩餘時間加分。</li>
+            <li>困難與大師不會標示自由牌，且有時間限制；選錯牌會扣分，大師模式另加罰 10 秒。</li>
+            <li>鍵盤：H 提示、U 復原、S 洗牌、Esc 暫停。</li>
+          </ul>
+        </details>
+        <a class="back-link" href="../../index.html#games">← 回到首頁</a>
+      </div>
+    </section>
+
+    <!-- 遊戲畫面 -->
+    <section id="gameScreen" class="screen game" hidden>
+      <header class="hud">
+        <button type="button" id="menuBtn" class="btn btn-icon" aria-label="回到選單" title="選單">☰</button>
+        <div class="stat"><span class="stat-label">剩餘</span><b id="hudRemaining">0</b></div>
+        <div class="stat"><span class="stat-label">時間</span><b id="hudTime">00:00</b></div>
+        <div class="stat"><span class="stat-label">分數</span><b id="hudScore">0</b></div>
+        <button type="button" id="pauseBtn" class="btn btn-icon" aria-label="暫停" title="暫停 (Esc)">❚❚</button>
+      </header>
+
+      <div id="boardWrap" class="board-wrap">
+        <canvas id="board" aria-label="麻將牌桌"></canvas>
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      </div>
+
+      <nav class="toolbar" aria-label="遊戲操作">
+        <button type="button" id="hintBtn" class="btn tool">💡 提示 <span class="count" id="hintCount"></span></button>
+        <button type="button" id="undoBtn" class="btn tool">↩ 復原 <span class="count" id="undoCount"></span></button>
+        <button type="button" id="shuffleBtn" class="btn tool">🔀 洗牌 <span class="count" id="shuffleCount"></span></button>
+        <button type="button" id="restartBtn" class="btn tool">⟳ 重玩</button>
+      </nav>
+
+      <div id="pauseOverlay" class="overlay" hidden>
+        <div class="dialog">
+          <h2>已暫停</h2>
+          <p>牌桌已隱藏，計時暫停。</p>
+          <div class="dialog-actions">
+            <button type="button" id="resumeBtn" class="btn btn-primary">繼續遊戲</button>
+            <button type="button" id="pauseMenuBtn" class="btn">回到選單</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="dialogOverlay" class="overlay" hidden>
+        <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+          <h2 id="dialogTitle"></h2>
+          <div id="dialogBody" class="dialog-body"></div>
+          <div id="dialogActions" class="dialog-actions"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="engine.js"></script>
+  <script src="render.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

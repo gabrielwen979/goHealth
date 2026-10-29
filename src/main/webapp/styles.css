@@ -7524,3 +7524,32 @@ html[data-theme="light"] .travel-checklist li strong {
     transition: none;
   }
 }
+
+.mahjong-card {
+  background:
+    radial-gradient(ellipse at 92% 8%, #6fae8a33, transparent 48%),
+    linear-gradient(145deg, #1f3329, #161d22 78%);
+}
+
+.mahjong-tile-button {
+  display: grid;
+  width: 64px;
+  height: 80px;
+  margin-bottom: 18px;
+  place-items: center;
+  border: 2px solid #e6d3b6;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #fbf6ea, #e8dcc3);
+  box-shadow: 4px 5px 0 #2f6b4a, 0 10px 22px #0006;
+  text-decoration: none;
+  transition: transform 160ms ease;
+}
+
+.mahjong-tile-button:hover {
+  transform: translateY(-3px);
+}
+
+.mahjong-tile-face {
+  font-size: 44px;
+  line-height: 1;
+}
