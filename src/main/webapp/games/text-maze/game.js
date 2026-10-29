@@ -60,12 +60,14 @@ const signOutButton = document.querySelector("#signOutButton");
 const installButton = document.querySelector("#installButton");
 const matchDialog = document.querySelector("#matchDialog");
 const matchBoardElement = document.querySelector("#matchBoard");
-const matchScoreElement = document.querySelector("#matchScore");
+const matchScoreElement = document.querySelector("#matchScore") || { textContent: "" }; // 新版本無此元素
 const matchMessage = document.querySelector("#matchMessage");
 const riddleDialog = document.querySelector("#riddleDialog");
 const riddleMessage = document.querySelector("#riddleMessage");
 const victoryDialog = document.querySelector("#victoryDialog");
 const victorySummary = document.querySelector("#victorySummary");
+const nextLevelBtn = document.querySelector("#nextLevelBtn");
+const restartBtn = document.querySelector("#restartBtn");
 
 let supabaseClient = null;
 let currentSession = null;
@@ -213,16 +215,16 @@ function renderGame() {
       let label = "";
       if (symbol === "#") {
         className += " wall";
-        label = "牆";
+        label = "█";  // 改為實心方塊而不是「牆」字
       } else if (isPlayer) {
         className += " player";
-        label = "你";
+        label = "🧚";  // 改為精靈角色
       } else if (isTreasure) {
         className += " chest";
-        label = "◆";
+        label = "💎";  // 改為寶石
       } else if (isDoor) {
         className += " goal";
-        label = "門";
+        label = "🌈";  // 改為彩虹出口
       }
       cells.push(
         `<div class="${className}" role="gridcell" aria-label="${y + 1} 行 ${x + 1} 列：${label || "道路"}">${label}</div>`,
@@ -233,12 +235,13 @@ function renderGame() {
   scoreValue.textContent = String(gameState.score);
   highScoreValue.textContent = String(gameState.high_score);
   levelLabel.textContent = String(gameState.current_level).padStart(2, "0");
-  chestStatus.textContent = gameState.chest_cleared ? "寶箱已開啟" : "寶箱未開啟";
+  chestStatus.textContent = gameState.chest_cleared ? "🔓 寶箱已開啟" : "🔒 寶箱未開啟";
   chestStatus.classList.toggle("is-cleared", gameState.chest_cleared);
-  document.querySelectorAll("[data-move], #resetButton").forEach((control) => {
+  document.querySelectorAll("[data-move]").forEach((control) => {
     control.disabled = !gameReady || gameState.completed;
   });
-  document.querySelector("#resetButton").disabled = !gameReady;
+  const resetButton = document.querySelector("#resetButton");
+  if (resetButton) resetButton.disabled = !gameReady;
 }
 
 function setGameReady(ready) {
@@ -754,10 +757,6 @@ document.querySelectorAll("[data-move]").forEach((button) => {
   button.addEventListener("click", () => void movePlayer(button.dataset.move));
 });
 
-document.querySelector(".dpad .wait-button").addEventListener("click", () => {
-  showMessage(mazeMessage, "休息一下，再繼續探索。");
-});
-
 document.addEventListener("keydown", (event) => {
   const target = event.target;
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return;
@@ -782,9 +781,10 @@ document.addEventListener("keydown", (event) => {
   void movePlayer(direction);
 });
 
-matchBoardElement.addEventListener("click", onMatchBoardClick);
-document.querySelector("#closeMatchButton").addEventListener("click", () => matchDialog.close());
-document.querySelector("#closeRiddleButton").addEventListener("click", () => riddleDialog.close());
+if (matchBoardElement) {
+  matchBoardElement.addEventListener("click", onMatchBoardClick);
+}
+
 const answerListEl = document.querySelector(".answer-list");
 if (answerListEl) {
   answerListEl.addEventListener("click", (event) => {
@@ -792,8 +792,11 @@ if (answerListEl) {
     if (answerButton) void answerRiddle(answerButton.dataset.answer);
   });
 }
-document.querySelector("#resetButton").addEventListener("click", () => void resetGame());
-document.querySelector("#playAgainButton").addEventListener("click", () => void resetGame());
+
+// 新版本的勝利按鈕
+if (nextLevelBtn) nextLevelBtn.addEventListener("click", () => void resetGame());
+if (restartBtn) restartBtn.addEventListener("click", () => void resetGame());
+
 authForm.addEventListener("submit", (event) => void signInWithPassword(event));
 signUpButton.addEventListener("click", () => void signUpWithPassword());
 signOutButton.addEventListener("click", () => void signOut());

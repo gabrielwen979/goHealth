@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#111a24" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="description"
+      content="走進文字迷宮，挑戰元素消除與台灣地理字謎，支援手機、桌機與離線遊玩。"
+    />
+    <title>文字迷宮：元素消除大冒險</title>
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="../../supabase-config.js" defer></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="game.js?t=20251029b" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="../../" aria-label="返回 goHealth">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span>文字迷宮</span>
+        </a>
+        <div class="topbar-actions">
+          <button class="quiet-button" id="installButton" type="button" hidden>安裝遊戲</button>
+          <span class="session-label" id="sessionLabel">離線遊玩</span>
+        </div>
+      </header>
+
+      <section class="intro">
+        <p class="eyebrow">ELEMENTS · MATCH · RIDDLE</p>
+        <h1>文字迷宮：<em>元素消除大冒險</em></h1>
+        <p>穿越迷宮、打開元素寶箱，最後解開台灣地理謎題。進度會儲存在本機；登入 Supabase 後也可同步。</p>
+      </section>
+
+      <section class="account-panel" aria-labelledby="accountTitle">
+        <div class="account-heading">
+          <div>
+            <p class="eyebrow">SAVE YOUR ADVENTURE</p>
+            <h2 id="accountTitle">帳號與進度同步</h2>
+          </div>
+          <span class="sync-indicator" id="syncIndicator" aria-hidden="true"></span>
+        </div>
+        <form class="auth-form" id="authForm">
+          <label>
+            <span>Email</span>
+            <input id="emailInput" name="email" type="email" autocomplete="username" placeholder="name@example.com" />
+          </label>
+          <label>
+            <span>密碼</span>
+            <input id="passwordInput" name="password" type="password" autocomplete="current-password" minlength="8" placeholder="至少 8 碼" />
+          </label>
+          <div class="auth-actions">
+            <button class="primary-button" id="signInButton" type="submit">登入</button>
+            <button class="secondary-button" id="signUpButton" type="button">建立帳號</button>
+            <button class="secondary-button" id="signOutButton" type="button" hidden>登出</button>
+          </div>
+        </form>
+        <p class="account-message" id="accountMessage" role="status" aria-live="polite">可以先離線遊玩；設定 Supabase 後登入即可跨裝置同步。</p>
+      </section>
+
+      <section class="game-panel" aria-labelledby="gameTitle">
+        <div class="game-heading">
+          <div>
+            <p class="eyebrow">LEVEL <span id="levelLabel">01</span></p>
+            <h2 id="gameTitle">尋找元素寶箱與出口</h2>
+          </div>
+          <div class="scoreboard" aria-label="遊戲分數">
+            <div><span>本局分數</span><strong id="scoreValue">0</strong></div>
+            <div><span>最高分</span><strong id="highScoreValue">0</strong></div>
+          </div>
+        </div>
+
+        <div class="game-layout">
+          <section class="maze-card" aria-label="迷宮區域">
+            <div class="maze-status">
+              <span id="mazeMessage" role="status" aria-live="polite">移動角色，找到寶箱。</span>
+              <span class="chest-status" id="chestStatus">寶箱未開啟</span>
+            </div>
+            <div class="maze-grid" id="mazeGrid" role="grid" aria-label="文字迷宮"></div>
+            <div class="maze-legend" aria-label="迷宮圖示說明">
+              <span><i class="legend-player">你</i>玩家</span>
+              <span><i class="legend-chest">◆</i>元素寶箱</span>
+              <span><i class="legend-goal">門</i>出口</span>
+            </div>
+          </section>
+
+          <aside class="control-card" aria-label="遊戲控制">
+            <p class="eyebrow">MOVE</p>
+            <h3>探索迷宮</h3>
+            <p class="control-hint">使用鍵盤方向鍵／WASD，或點擊方向按鈕。</p>
+            <div class="dpad" aria-label="虛擬方向按鈕">
+              <span></span><button type="button" data-move="up" aria-label="向上移動">↑</button><span></span>
+              <button type="button" data-move="left" aria-label="向左移動">←</button>
+              <button class="wait-button" type="button" aria-label="停留">·</button>
+              <button type="button" data-move="right" aria-label="向右移動">→</button>
+              <span></span><button type="button" data-move="down" aria-label="向下移動">↓</button><span></span>
+            </div>
+            <div class="control-divider"></div>
+            <p class="objective-label">任務目標</p>
+            <ol class="objective-list">
+              <li>走到寶箱，完成元素消除並取得 50 分。</li>
+              <li>前往出口大門，回答台灣地理字謎。</li>
+            </ol>
+            <button class="reset-button" id="resetButton" type="button">重新開始本關</button>
+          </aside>
+        </div>
+        <p class="game-message" id="gameMessage" role="status" aria-live="polite"></p>
+      </section>
+
+      <footer class="footer-note">
+        <p>離線時會使用此裝置的本機進度。登入後，雲端存檔僅能由該帳號讀取與更新。</p>
+        <a href="../../">返回 goHealth</a>
+      </footer>
+    </main>
+
+    <dialog class="game-dialog match-dialog" id="matchDialog" aria-labelledby="matchTitle">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">ELEMENT CHEST</p>
+          <h2 id="matchTitle">元素連線消除</h2>
+        </div>
+        <button class="icon-button" id="closeMatchButton" type="button" aria-label="稍後再挑戰">×</button>
+      </div>
+      <p class="dialog-copy">交換相鄰元素，連成三個或以上即可消除。累積 50 分打開寶箱。</p>
+      <div class="match-score-row">
+        <span>消除分數</span>
+        <strong><span id="matchScore">0</span><small> / 50</small></strong>
+      </div>
+      <div class="match-board" id="matchBoard" role="grid" aria-label="5 乘 5 元素消除棋盤"></div>
+      <p class="match-message" id="matchMessage" role="status" aria-live="polite">選一個元素，再選旁邊的元素交換。</p>
+      <div class="element-legend">
+        <span>🔥 火</span><span>💧 水</span><span>🌿 木</span><span>🪨 土</span><span>⚡ 雷</span>
+      </div>
+    </dialog>
+
+    <dialog class="game-dialog riddle-dialog" id="riddleDialog" aria-labelledby="riddleTitle">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">FINAL RIDDLE</p>
+          <h2 id="riddleTitle">出口字謎</h2>
+        </div>
+        <button class="icon-button" id="closeRiddleButton" type="button" aria-label="稍後回答">×</button>
+      </div>
+      <p class="riddle-question">台灣最高的山是哪一座？</p>
+      <div class="answer-list">
+        <button type="button" data-answer="阿里山">A. 阿里山</button>
+        <button type="button" data-answer="玉山">B. 玉山</button>
+        <button type="button" data-answer="合歡山">C. 合歡山</button>
+      </div>
+      <p class="riddle-message" id="riddleMessage" role="status" aria-live="polite">選出正確答案即可通關。</p>
+    </dialog>
+
+    <dialog class="game-dialog victory-dialog" id="victoryDialog" aria-labelledby="victoryTitle">
+      <div class="victory-icon" aria-hidden="true">✦</div>
+      <p class="eyebrow">MAZE CLEARED</p>
+      <h2 id="victoryTitle">迷宮探索完成！</h2>
+      <p id="victorySummary">你解開字謎並成功抵達出口。</p>
+      <button class="primary-button" id="playAgainButton" type="button">再玩一次</button>
+    </dialog>
+  </body>
+</html>

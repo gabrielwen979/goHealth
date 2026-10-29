@@ -1,964 +1,707 @@
+/* ✨ 彩虹藝廊：元素覺醒 - 高品質樣式表 */
+
 :root {
-  color-scheme: dark;
-  font-family: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
-  background: #0c121a;
-  color: #eef4f6;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  --panel: #151f2a;
-  --panel-strong: #1b2936;
-  --line: #2f414d;
-  --muted: #9fb0b9;
-  --mint: #a8efd0;
-  --mint-dark: #143b31;
-  --gold: #f3cf83;
-  --wall: #25333d;
-  --floor: #17232c;
-  --tile-size: clamp(26px, 7.3vw, 48px);
+  color-scheme: light;
+  --color-primary-pink: #ff6b9d;
+  --color-primary-purple: #c75ce6;
+  --color-primary-blue: #4ecdc4;
+  --color-primary-cyan: #45b7d1;
+  --color-accent-gold: #ffd700;
+  --color-accent-silver: #e8e8e8;
+  --color-bg-light: #f8f4ff;
+  --color-bg-mid: #faf7f2;
+  --color-text-dark: #2d1b4e;
+  --color-text-light: #6b5b7f;
+  --color-shadow: rgba(199, 92, 230, 0.15);
+  --color-glow: rgba(255, 107, 157, 0.3);
+  
+  --gradient-primary: linear-gradient(135deg, #ff6b9d 0%, #c75ce6 50%, #4ecdc4 100%);
+  --gradient-soft: linear-gradient(135deg, #ffc0d9 0%, #e8c5f0 50%, #c0f0f0 100%);
+  
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  --shadow-sm: 0 2px 8px var(--color-shadow);
+  --shadow-md: 0 8px 16px var(--color-shadow);
+  --shadow-lg: 0 16px 32px var(--color-shadow);
+  --shadow-glow: 0 0 24px var(--color-glow);
 }
 
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
-  min-width: 320px;
-  min-height: 100vh;
-  margin: 0;
-  padding: max(0px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
-  background:
-    radial-gradient(ellipse at 9% 0%, #29504735, transparent 38%),
-    radial-gradient(ellipse at 98% 20%, #5b49732b, transparent 35%),
-    #0c121a;
+  background: var(--color-bg-light);
+  color: var(--color-text-dark);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-button,
-input {
-  font: inherit;
-}
-
-button {
-  color: inherit;
-}
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible {
-  outline: 3px solid #8ce2bf;
-  outline-offset: 3px;
-}
-
-.app-shell {
-  width: min(1050px, 100%);
-  margin: 0 auto;
-}
+/* ==================== 頂部導航欄 ==================== */
 
 .topbar {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  min-height: 62px;
-  border-bottom: 1px solid #ffffff12;
-}
-
-.brand,
-.topbar-actions {
-  display: flex;
   align-items: center;
-  gap: 10px;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: white;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  z-index: 100;
 }
 
 .brand {
-  color: #eff8f3;
-  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-display);
+  font-size: 20px;
   font-weight: 700;
+  color: var(--color-text-dark);
   text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.brand:hover {
+  transform: scale(1.05);
 }
 
 .brand-mark {
-  display: grid;
-  width: 31px;
-  height: 31px;
-  place-items: center;
-  border: 1px solid #a8efd04d;
-  border-radius: 10px;
-  background: #173a30;
-  color: var(--mint);
+  font-size: 24px;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
 }
 
 .session-label {
-  color: var(--muted);
-  font-size: 9px;
+  font-size: 13px;
+  color: var(--color-text-light);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: rgba(199, 92, 230, 0.08);
+  border-radius: var(--radius-sm);
 }
+
+/* ==================== 主容器 ==================== */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.game-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  background: linear-gradient(180deg, var(--color-bg-light) 0%, #f5f0fa 100%);
+}
+
+/* ==================== 歡迎區塊 ==================== */
 
 .intro {
-  padding: 38px 0 23px;
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  animation: slideDown 0.6s ease-out;
 }
 
-.eyebrow {
-  margin: 0 0 8px;
-  color: #91c6ae;
-  font: 700 9px "DM Sans", sans-serif;
-  letter-spacing: 0.15em;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-p {
-  overflow-wrap: anywhere;
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .intro h1 {
-  margin: 0;
-  color: #f3f7f5;
-  font-size: clamp(27px, 5vw, 43px);
-  letter-spacing: -0.05em;
-  line-height: 1.18;
+  font-family: var(--font-display);
+  font-size: 32px;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-sm);
 }
 
-.intro h1 em {
-  color: var(--mint);
-  font-style: normal;
+.intro em {
+  font-style: italic;
+  font-weight: 600;
 }
 
-.intro > p:last-child {
-  max-width: 740px;
-  margin: 13px 0 0;
-  color: #b0bec3;
-  font-size: 11px;
-  line-height: 1.9;
+.intro p {
+  color: var(--color-text-light);
+  font-size: 14px;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.account-panel,
-.game-panel {
-  border: 1px solid #31434d;
-  border-radius: 20px;
-  background: linear-gradient(145deg, #18232d, #121b25);
-  box-shadow: 0 14px 36px #00000028, inset 0 1px #ffffff0a;
-}
+/* ==================== 帳號面板 ==================== */
 
 .account-panel {
-  padding: 18px 20px 14px;
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--spacing-xl);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.account-heading,
-.game-heading,
-.dialog-heading,
-.scoreboard,
-.match-score-row {
+.account-heading {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-lg);
 }
 
 .account-heading h2 {
-  margin: 0;
-  font-size: 16px;
+  font-size: 20px;
+  color: var(--color-text-dark);
 }
 
-.account-heading .eyebrow {
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--color-text-light);
+  text-transform: uppercase;
   margin-bottom: 4px;
 }
 
 .sync-indicator {
-  width: 9px;
-  height: 9px;
-  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: #7a8a91;
+  background: #ccc;
+  transition: all 0.3s ease;
 }
 
 .sync-indicator.is-online {
-  background: #7de1aa;
-  box-shadow: 0 0 12px #7de1aa77;
+  background: #4ecdc4;
+  box-shadow: var(--shadow-glow);
 }
 
 .sync-indicator.is-error {
-  background: #ff9a82;
+  background: #ff6b9d;
 }
 
+/* ==================== 認證表單 ==================== */
+
 .auth-form {
-  display: grid;
-  grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr);
-  gap: 11px;
-  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
 }
 
 .auth-form label {
-  display: grid;
-  gap: 6px;
-  color: #bdc9ce;
-  font-size: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.auth-form label span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-dark);
 }
 
 .auth-form input {
-  width: 100%;
-  min-height: 39px;
-  padding: 9px 11px;
-  border: 1px solid #3b4e59;
-  border-radius: 10px;
-  background: #0e171f;
-  color: #edf5f2;
-  font-size: 11px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid #e0d5f0;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--color-primary-purple);
+  box-shadow: 0 0 12px rgba(199, 92, 230, 0.2);
 }
 
 .auth-actions {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 7px;
-  grid-column: 1 / -1;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
 }
 
-.primary-button,
-.secondary-button,
-.quiet-button,
-.reset-button,
-.icon-button {
-  min-height: 36px;
-  padding: 8px 13px;
-  border: 1px solid #456454;
-  border-radius: 10px;
-  background: #1b3b30;
-  color: #d7f4e3;
+.auth-actions button {
+  flex: 1;
+  padding: var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-weight: 600;
   cursor: pointer;
-  font-size: 10px;
-  font-weight: 700;
-  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+  transition: all 0.3s ease;
+  font-size: 14px;
 }
 
-.primary-button:hover,
-.secondary-button:hover,
-.quiet-button:hover,
-.reset-button:hover,
-.icon-button:hover {
-  border-color: #8bceb0;
-  background: #24513f;
+.primary-button {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-md);
 }
 
-.primary-button:active,
-.secondary-button:active,
-.quiet-button:active,
-.reset-button:active {
-  transform: scale(0.97);
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
-.secondary-button,
-.quiet-button {
-  border-color: #3b4d58;
-  background: #202e38;
-  color: #d4dfe2;
+.primary-button:active {
+  transform: translateY(0);
 }
 
-.quiet-button {
-  min-height: 31px;
-  padding: 6px 10px;
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.account-message,
-.game-message {
-  min-height: 17px;
-  margin: 8px 0 0;
-  color: #a7b8bd;
-  font-size: 9px;
-  line-height: 1.7;
+.secondary-button {
+  background: transparent;
+  color: var(--color-primary-purple);
+  border: 2px solid var(--color-primary-purple);
 }
 
-.account-message[data-kind="error"],
-.game-message[data-kind="error"] {
-  color: #ffad9a;
+.secondary-button:hover {
+  background: rgba(199, 92, 230, 0.08);
 }
 
-.account-message[data-kind="success"],
-.game-message[data-kind="success"] {
-  color: #9fe3bb;
+.account-message {
+  font-size: 13px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  text-align: center;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(199, 92, 230, 0.05);
+  color: var(--color-text-light);
 }
+
+.account-message.success {
+  background: rgba(78, 205, 196, 0.1);
+  color: #2d9b8e;
+}
+
+.account-message.error {
+  background: rgba(255, 107, 157, 0.1);
+  color: #d64a7f;
+}
+
+/* ==================== 遊戲面板 ==================== */
 
 .game-panel {
-  margin-top: 18px;
-  padding: clamp(15px, 2.8vw, 25px);
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  display: none;
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .game-heading {
-  align-items: flex-end;
-  margin-bottom: 16px;
-}
-
-.game-heading .eyebrow {
-  margin-bottom: 5px;
-}
-
-.game-heading h2 {
-  margin: 0;
-  font-size: clamp(17px, 2.5vw, 22px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid #f0e6ff;
 }
 
 .scoreboard {
-  gap: 8px;
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: flex-end;
 }
 
-.scoreboard > div {
-  display: grid;
-  gap: 3px;
-  min-width: 75px;
-  padding: 8px 10px;
-  border: 1px solid #354952;
-  border-radius: 11px;
-  background: #101920;
+.scoreboard div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .scoreboard span {
-  color: #9eafb5;
-  font-size: 8px;
+  font-size: 12px;
+  color: var(--color-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .scoreboard strong {
-  color: #eaf5ee;
-  font: 700 16px "DM Sans", sans-serif;
+  font-family: var(--font-display);
+  font-size: 24px;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
+
+/* ==================== 遊戲佈局 ==================== */
 
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 220px;
-  gap: 14px;
+  grid-template-columns: 1fr 200px;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
 }
 
-.maze-card,
-.control-card {
-  min-width: 0;
-  padding: 14px;
-  border: 1px solid #30434d;
-  border-radius: 16px;
-  background: #101922;
+@media (max-width: 768px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== 迷宮卡片 ==================== */
+
+.maze-card {
+  background: linear-gradient(135deg, #faf7f2 0%, #f5f0fa 100%);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  border: 2px solid #e8dff8;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 
 .maze-status {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  min-height: 28px;
-  margin-bottom: 11px;
-  color: #b2c2c6;
-  font-size: 9px;
+  align-items: center;
+  font-size: 13px;
 }
 
-.chest-status {
-  flex: 0 0 auto;
-  color: #f3d28d;
-  font-size: 8px;
-}
-
-.chest-status.is-cleared {
-  color: #93e2b7;
+.maze-status span {
+  padding: 4px 8px;
+  background: white;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
 }
 
 .maze-grid {
   display: grid;
-  width: max-content;
-  max-width: 100%;
-  grid-template-columns: repeat(11, var(--tile-size));
-  gap: 3px;
-  margin: 0 auto;
-  padding: 6px;
-  border: 1px solid #31434d;
-  border-radius: 12px;
-  background: #0c141b;
-  touch-action: manipulation;
+  grid-template-columns: repeat(11, 1fr);
+  gap: 2px;
+  padding: var(--spacing-md);
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.maze-cell {
-  display: grid;
-  width: var(--tile-size);
-  height: var(--tile-size);
-  place-items: center;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  background: var(--floor);
-  color: #eaf5ef;
-  font-size: clamp(11px, 3vw, 16px);
-  font-weight: 800;
-  line-height: 1;
-}
-
-.maze-cell.wall {
-  border-color: #354752;
-  background: linear-gradient(145deg, #30404a, #202c35);
-  box-shadow: inset 0 1px #ffffff0d, 0 2px 3px #0000002a;
-}
-
-.maze-cell.player {
-  border-color: #9bf0c8;
-  background: #1f654b;
-  box-shadow: 0 0 15px #65d9a377, inset 0 1px #ffffff50;
-  color: #f1fff7;
-}
-
-.maze-cell.chest {
-  border-color: #b58845;
-  background: #493722;
-  color: #ffd986;
-  animation: chest-glow 2s ease-in-out infinite;
-}
-
-.maze-cell.goal {
-  border-color: #657fc4;
-  background: #202e50;
-  color: #c9d6ff;
-}
-
-.maze-cell.visited:not(.wall, .player, .chest, .goal) {
-  background: #1b302e;
-}
-
-.maze-legend {
+.maze-grid [role="gridcell"] {
+  aspect-ratio: 1;
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 11px;
-  color: #a8b7bd;
-  font-size: 8px;
-}
-
-.maze-legend span {
-  display: inline-flex;
   align-items: center;
-  gap: 5px;
-}
-
-.maze-legend i {
-  display: grid;
-  width: 19px;
-  height: 19px;
-  place-items: center;
-  border-radius: 5px;
-  font-size: 8px;
-  font-style: normal;
+  justify-content: center;
+  border-radius: var(--radius-sm);
   font-weight: 700;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  cursor: default;
+  user-select: none;
+  background: white;
 }
 
-.legend-player {
-  background: #1f654b;
-  color: #f1fff7;
+.maze-grid [role="gridcell"]:contains("你") {
+  background: linear-gradient(135deg, #ff6b9d 0%, #c75ce6 100%);
+  color: white;
+  box-shadow: var(--shadow-glow);
+  animation: bounce 0.6s ease-in-out infinite;
 }
 
-.legend-chest {
-  background: #493722;
-  color: #ffd986;
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
-.legend-goal {
-  background: #202e50;
-  color: #c9d6ff;
+/* ==================== 消除棋盤 ==================== */
+
+.board-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+  max-width: 90%;
+  width: 100%;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: none;
 }
 
-.control-card .eyebrow {
-  margin-bottom: 5px;
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
-.control-card h3 {
-  margin: 0;
-  font-size: 15px;
+.board-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--color-text-dark);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
 }
 
-.control-hint {
-  margin: 7px 0 12px;
-  color: #9eafb5;
-  font-size: 9px;
-  line-height: 1.7;
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  background: linear-gradient(135deg, #faf7f2 0%, #f5f0fa 100%);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
 }
+
+.board-grid [role="gridcell"] {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.board-grid [role="gridcell"]:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.board-grid [role="gridcell"]:active {
+  transform: scale(0.95);
+}
+
+/* ==================== 字謎對話框 ==================== */
+
+dialog.game-dialog {
+  border: none;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-xl);
+  background: white;
+  max-width: 500px;
+  animation: slideUp 0.4s ease-out;
+}
+
+dialog.game-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.riddle-question {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--color-text-dark);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.answer-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.answer-list li {
+  padding: var(--spacing-md);
+  border: 2px solid #e0d5f0;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-align: center;
+  background: white;
+}
+
+.answer-list li:hover {
+  border-color: var(--color-primary-purple);
+  background: rgba(199, 92, 230, 0.05);
+  transform: translateX(4px);
+}
+
+.answer-list li:active {
+  transform: scale(0.98);
+}
+
+/* ==================== 虛擬方向鈕 ==================== */
 
 .dpad {
   display: grid;
-  width: 142px;
   grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
-  margin: 0 auto;
+  gap: var(--spacing-sm);
+  justify-items: center;
+  align-items: center;
 }
 
 .dpad button {
   width: 44px;
-  height: 42px;
-  border: 1px solid #41545e;
-  border-radius: 11px;
-  background: #1c2a34;
-  color: #ddf2e7;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #ffc0d9 0%, #e8c5f0 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
   cursor: pointer;
-  font: 700 17px "DM Sans", sans-serif;
-  touch-action: manipulation;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .dpad button:hover {
-  border-color: #8bceb0;
-  background: #244638;
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
 }
 
-.dpad .wait-button {
-  color: #8ea1aa;
-  font-size: 20px;
+.dpad button:active {
+  transform: scale(0.95);
 }
 
-.control-divider {
-  height: 1px;
-  margin: 15px 0;
-  background: #ffffff14;
-}
+/* ==================== 響應式設計 ==================== */
 
-.objective-label {
-  margin: 0;
-  color: #d6e5dd;
-  font-size: 9px;
-  font-weight: 700;
-}
-
-.objective-list {
-  display: grid;
-  gap: 8px;
-  margin: 8px 0 14px;
-  padding-left: 17px;
-  color: #9eafb5;
-  font-size: 8px;
-  line-height: 1.7;
-}
-
-.reset-button {
-  width: 100%;
-  border-color: #624e4a;
-  background: #332724;
-  color: #f2c0a8;
-}
-
-.reset-button:hover {
-  border-color: #d49b7c;
-  background: #4a3027;
-}
-
-.footer-note {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 15px 2px;
-  color: #899ba3;
-  font-size: 8px;
-  line-height: 1.7;
-}
-
-.footer-note p {
-  margin: 0;
-}
-
-.footer-note a {
-  flex: 0 0 auto;
-  color: #acd9c2;
-}
-
-.game-dialog {
-  width: min(440px, calc(100vw - 24px));
-  max-height: min(90vh, 760px);
-  padding: 20px;
-  overflow: auto;
-  border: 1px solid #48645b;
-  border-radius: 20px;
-  background:
-    radial-gradient(ellipse at 50% 0%, #43856728, transparent 47%),
-    #151f28;
-  color: #eff6f2;
-  box-shadow: 0 24px 80px #000000a6, inset 0 1px #ffffff15;
-}
-
-.game-dialog::backdrop {
-  background: #071016c9;
-  backdrop-filter: blur(7px);
-}
-
-.dialog-heading {
-  align-items: flex-start;
-}
-
-.dialog-heading .eyebrow {
-  margin-bottom: 4px;
-}
-
-.dialog-heading h2 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.icon-button {
-  width: 32px;
-  min-height: 32px;
-  padding: 0;
-  border-radius: 50%;
-  background: #22313b;
-  font-size: 19px;
-}
-
-.dialog-copy {
-  margin: 12px 0;
-  color: #b4c3c6;
-  font-size: 10px;
-  line-height: 1.8;
-}
-
-.match-score-row {
-  margin: 13px 0 9px;
-  color: #b8c7c9;
-  font-size: 10px;
-}
-
-.match-score-row strong {
-  color: var(--gold);
-  font: 700 19px "DM Sans", sans-serif;
-}
-
-.match-score-row small {
-  color: #92a3aa;
-  font-size: 10px;
-}
-
-.match-board {
-  display: grid;
-  width: max-content;
-  max-width: 100%;
-  grid-template-columns: repeat(5, clamp(42px, 12vw, 56px));
-  gap: 5px;
-  margin: 0 auto;
-  padding: 8px;
-  border: 1px solid #354952;
-  border-radius: 14px;
-  background: #0c151c;
-}
-
-.gem-tile {
-  display: grid;
-  width: clamp(42px, 12vw, 56px);
-  height: clamp(42px, 12vw, 56px);
-  place-items: center;
-  border: 1px solid #ffffff24;
-  border-radius: 12px;
-  cursor: pointer;
-  font-size: 21px;
-  box-shadow: inset 0 1px #ffffff33, 0 3px 7px #0000003a;
-  touch-action: manipulation;
-  transition: transform 120ms ease, filter 120ms ease, outline-color 120ms ease;
-}
-
-.gem-tile:hover {
-  filter: brightness(1.16);
-  transform: translateY(-2px);
-}
-
-.gem-tile.selected {
-  outline: 3px solid #fff4b8;
-  outline-offset: 1px;
-  transform: scale(0.92);
-}
-
-.gem-tile.gem-fire {
-  background: linear-gradient(145deg, #a94c37, #622c35);
-}
-
-.gem-tile.gem-water {
-  background: linear-gradient(145deg, #377fba, #264777);
-}
-
-.gem-tile.gem-wood {
-  background: linear-gradient(145deg, #3f9565, #286049);
-}
-
-.gem-tile.gem-earth {
-  background: linear-gradient(145deg, #a17b48, #665032);
-}
-
-.gem-tile.gem-lightning {
-  background: linear-gradient(145deg, #8b70c3, #51417e);
-}
-
-.gem-tile:disabled {
-  cursor: default;
-}
-
-.match-message,
-.riddle-message {
-  min-height: 17px;
-  margin: 10px 0 0;
-  color: #c0cecd;
-  font-size: 9px;
-  text-align: center;
-}
-
-.match-message[data-kind="error"],
-.riddle-message[data-kind="error"] {
-  color: #ffad9a;
-}
-
-.element-legend {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 11px;
-  margin-top: 12px;
-  color: #aebdc0;
-  font-size: 8px;
-}
-
-.riddle-question {
-  margin: 18px 0;
-  color: #f3f6ee;
-  font-size: 17px;
-  font-weight: 700;
-  text-align: center;
-}
-
-.answer-list {
-  display: grid;
-  gap: 8px;
-}
-
-.answer-list button {
-  min-height: 43px;
-  padding: 10px 13px;
-  border: 1px solid #3d515a;
-  border-radius: 11px;
-  background: #1c2a34;
-  color: #e3ecec;
-  cursor: pointer;
-  font-size: 11px;
-  text-align: left;
-}
-
-.answer-list button:hover {
-  border-color: #83c8a9;
-  background: #214334;
-}
-
-.victory-dialog {
-  max-width: 360px;
-  text-align: center;
-}
-
-.victory-icon {
-  display: grid;
-  width: 58px;
-  height: 58px;
-  place-items: center;
-  margin: 3px auto 13px;
-  border: 1px solid #a9e3be80;
-  border-radius: 18px;
-  background: #244936;
-  color: #d7f7a9;
-  font-size: 29px;
-}
-
-.victory-dialog h2 {
-  margin: 0;
-  color: #f4f7ef;
-  font-size: 22px;
-}
-
-.victory-dialog > p:not(.eyebrow) {
-  margin: 9px 0 19px;
-  color: #bac8c5;
-  font-size: 10px;
-  line-height: 1.8;
-}
-
-.victory-dialog .primary-button {
-  min-width: 140px;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-@keyframes chest-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 8px #f4c66426, inset 0 1px #ffffff20;
+@media (max-width: 768px) {
+  .game-content {
+    padding: var(--spacing-md);
   }
-  50% {
-    box-shadow: 0 0 17px #f4c66466, inset 0 1px #ffffff3d;
-  }
-}
 
-@media (min-width: 760px) {
-  body {
-    padding-right: 24px;
-    padding-left: 24px;
+  .intro h1 {
+    font-size: 24px;
   }
-}
 
-@media (max-width: 680px) {
+  .account-panel {
+    width: 100%;
+  }
+
   .game-layout {
     grid-template-columns: 1fr;
   }
 
-  .control-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 150px;
-    align-items: center;
-    gap: 0 12px;
+  .maze-grid {
+    grid-template-columns: repeat(7, 1fr);
   }
 
-  .control-card > .eyebrow,
-  .control-card > h3,
-  .control-card > .control-hint {
-    grid-column: 1;
-  }
-
-  .control-card > .eyebrow {
-    align-self: end;
-  }
-
-  .control-card > h3 {
-    align-self: start;
-  }
-
-  .control-card > .control-hint {
-    margin-bottom: 0;
-  }
-
-  .dpad {
-    grid-column: 2;
-    grid-row: 1 / span 3;
-    grid-template-rows: repeat(3, 38px);
-    width: 128px;
-  }
-
-  .dpad button {
-    width: 40px;
-    height: 37px;
-  }
-
-  .control-divider,
-  .objective-label,
-  .objective-list,
-  .control-card > .reset-button {
-    grid-column: 1 / -1;
-  }
-
-  .control-divider {
-    margin: 13px 0;
-  }
-
-  .objective-list {
-    margin-bottom: 11px;
+  dialog.game-dialog {
+    width: 95%;
+    max-width: none;
   }
 }
 
-@media (max-width: 460px) {
-  body {
-    padding-right: 12px;
-    padding-left: 12px;
-  }
-
+@media (max-width: 480px) {
   .topbar {
-    min-height: 55px;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
 
-  .session-label {
-    max-width: 125px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .brand {
+    font-size: 16px;
   }
 
-  .intro {
-    padding-top: 28px;
-  }
-
-  .intro > p:last-child {
-    font-size: 10px;
-  }
-
-  .account-panel {
-    padding: 15px;
-  }
-
-  .auth-form {
-    grid-template-columns: 1fr;
-  }
-
-  .auth-actions {
-    grid-column: 1;
-  }
-
-  .auth-actions button {
-    flex: 1 1 auto;
-  }
-
-  .game-panel {
-    padding: 12px 9px;
+  .intro h1 {
+    font-size: 20px;
   }
 
   .game-heading {
-    align-items: flex-start;
     flex-direction: column;
+    gap: var(--spacing-md);
   }
 
   .scoreboard {
     width: 100%;
-  }
-
-  .scoreboard > div {
-    flex: 1;
-  }
-
-  .maze-card {
-    padding: 8px 5px;
-  }
-
-  .maze-grid {
-    gap: 2px;
-    padding: 4px;
-    border-radius: 9px;
-  }
-
-  .maze-cell {
-    border-radius: 4px;
-  }
-
-  .maze-status {
-    font-size: 8px;
-  }
-
-  .footer-note {
-    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-around;
   }
 }
 
-@media (max-width: 360px) {
-  :root {
-    --tile-size: 24px;
-  }
+/* ==================== 動畫與特效 ==================== */
 
-  .maze-grid {
-    gap: 1px;
-  }
-
-  .maze-cell {
-    font-size: 10px;
-  }
-
-  .control-card {
-    grid-template-columns: minmax(0, 1fr) 132px;
-  }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 107, 157, 0.3); }
+  50% { box-shadow: 0 0 24px rgba(255, 107, 157, 0.6); }
+}
+
+.glow-effect {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* ==================== 滾動條樣式 ==================== */
+
+.game-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.game-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.game-content::-webkit-scrollbar-thumb {
+  background: rgba(199, 92, 230, 0.3);
+  border-radius: 4px;
+}
+
+.game-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(199, 92, 230, 0.6);
 }
