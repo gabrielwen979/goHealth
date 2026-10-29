@@ -529,17 +529,10 @@
         el.btnLogout.disabled = true;
         try {
           await flushProgress();
-          var result = await window.CatCloud.signOut();
-          if (result && result.ok) {
-            leaveGame(result.message);
-          } else {
-            showToast(result && result.message ? result.message : '登出失敗，請稍後再試。');
-          }
         } catch (error) {
-          showToast('登出失敗，請稍後再試。');
-        } finally {
-          el.btnLogout.disabled = false;
+          // 存檔失敗仍允許返回首頁
         }
+        window.location.href = '../../index.html';
       });
     }
 

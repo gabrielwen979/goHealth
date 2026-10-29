@@ -242,7 +242,7 @@
     var keep = acts.some(function (a) { return a.text.indexOf('復原') === 0; });
     if (!keep) S.over = true;
     if (!acts.some(function (a) { return a.text === '回到選單'; })) acts.push({ text: '回到選單', fn: toMenu });
-    acts.push({ text: '登出（回 goHealth 首頁）', fn: goHome });
+    acts.push({ text: '返回 goHealth 首頁', fn: goHome });
     showDialog(title, body, acts);
     updateHud();
   }
@@ -268,7 +268,7 @@
       '<div>失誤 ' + S.mistakes + ' 次' + (isBest ? '　🏆 新紀錄' : '') + '</div>', [
       { text: '再玩一次', primary: true, fn: function () { startGame(); } },
       { text: '更換牌型', fn: toMenu },
-      { text: '登出（回 goHealth 首頁）', fn: goHome }
+      { text: '返回 goHealth 首頁', fn: goHome }
     ]);
   }
 
