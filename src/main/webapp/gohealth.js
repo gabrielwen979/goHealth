@@ -1029,6 +1029,16 @@ async function initializeAuthentication() {
     await toggleRecommendedMeal(button);
   });
   mealGrid.addEventListener("click", async (event) => {
+    const detailsSummary = event.target.closest(".meal-details > summary");
+    if (detailsSummary) {
+      event.preventDefault();
+      const shouldOpen = !detailsSummary.parentElement.open;
+      mealGrid.querySelectorAll(".meal-details").forEach((details) => {
+        details.open = shouldOpen;
+      });
+      return;
+    }
+
     const button = event.target.closest("[data-recommendation-id]");
     if (!button) return;
     await toggleRecommendedMeal(button);
