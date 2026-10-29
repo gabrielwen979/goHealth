@@ -83,6 +83,18 @@
         </button>
         <button
           class="nav-tab"
+          id="gamesTab"
+          type="button"
+          role="tab"
+          aria-controls="games"
+          aria-selected="false"
+          tabindex="-1"
+          data-tab-target="games"
+        >
+          🐾 遊戲
+        </button>
+        <button
+          class="nav-tab"
           id="profileTab"
           type="button"
           role="tab"
@@ -463,6 +475,34 @@
         <p class="weather-attribution">資料來源：<a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a>。預報為參考資訊，實際天氣可能變動。</p>
       </section>
       </div>
+
+      <section class="games-section section-wrap" id="games" data-tab-panel="games" role="tabpanel" aria-labelledby="gamesTab" tabindex="0" hidden>
+       <div class="games-heading">
+         <p class="eyebrow">A LITTLE PLAYTIME</p>
+         <h2>挑一款遊戲，<em>放鬆一下。</em></h2>
+         <p>用一點遊戲時間，讓今天多一點可愛的小冒險。</p>
+       </div>
+       <div class="game-launch-grid">
+         <article class="game-launch-card cat-dream-card">
+           <span class="game-launch-icon" aria-hidden="true">🐾</span>
+           <p class="eyebrow">CAT PUZZLE ADVENTURE</p>
+           <h3>肉墊的夢境編織</h3>
+           <p>陪銀漸層英短穿越綠寶石迷宮，打開毛線球寶箱，玩一場療癒的寶物消除。</p>
+           <a class="game-launch-button" href="games/cat-dream-weaver/">
+             開始英短大冒險 <span aria-hidden="true">↗</span>
+           </a>
+         </article>
+         <article class="game-launch-card text-maze-card">
+           <span class="game-launch-icon" aria-hidden="true">✦</span>
+           <p class="eyebrow">WORD MAZE ADVENTURE</p>
+           <h3>文字迷宮：元素消除大冒險</h3>
+           <p>走進迷宮、完成元素消除，探索文字與地理知識的趣味挑戰。</p>
+           <a class="game-launch-button" href="games/text-maze/">
+             開始文字迷宮 <span aria-hidden="true">↗</span>
+           </a>
+         </article>
+       </div>
+      </section>
 
       <section class="profile-section section-wrap" id="profile" data-tab-panel="profile" role="tabpanel" aria-labelledby="profileTab" tabindex="0" hidden>
         <div class="section-heading profile-heading">
