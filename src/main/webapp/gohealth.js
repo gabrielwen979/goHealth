@@ -1509,7 +1509,7 @@ function renderMeals() {
         <div class="meal-kcal"><strong>${meal.kcal}</strong><span>kcal / 份</span></div>
       </div>
       <div class="meal-tags">${isLunarVegetarianDay(selectedMenuDate) ? '<span class="meal-tag lunar-meal-tag">蛋奶素・低碳</span>' : ""}<span class="meal-tag">淨碳水 ${netCarbs} g</span><span class="meal-tag">膳食纖維 ${meal.fiber} g</span></div>
-      <button class="meal-save-button" type="button" data-recommendation-id="${recommendationId}" aria-pressed="${isSaved}">${isSaved ? "已收藏推薦菜單" : "加入我的推薦菜單"}</button>
+      <button class="meal-save-button" type="button" data-recommendation-id="${recommendationId}" aria-pressed="${isSaved}">${isSaved ? "已收藏推薦菜單<span class=\"meal-save-heart\" aria-hidden=\"true\">♥</span>" : "加入我的推薦菜單"}</button>
       <div class="macro-strip" aria-label="每份營養估算">
         <div><strong>${meal.protein} g</strong><span>蛋白質</span></div>
         <div><strong>${meal.fat} g</strong><span>脂肪</span></div>
