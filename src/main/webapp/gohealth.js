@@ -1025,7 +1025,7 @@ async function initializeAuthentication() {
     renderRecommendationLists();
     await saveProfileData();
   });
-  document.querySelector("#profile").addEventListener("click", async (event) => {
+  document.querySelector(".recommendations-panel").addEventListener("click", async (event) => {
     const button = event.target.closest("[data-recommendation-id]");
     if (!button) return;
     await toggleRecommendedMeal(button);
