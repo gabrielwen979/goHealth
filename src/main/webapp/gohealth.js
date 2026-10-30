@@ -547,7 +547,7 @@ function renderRecommendationLists() {
         <span><small>${formatMenuDay(day)}</small><strong>${escapeHtml(meal.name)}</strong></span>
         <button type="button" data-recommendation-id="${id}" aria-label="移除${escapeHtml(meal.name)}">移除</button>
       </div>`).join("")
-    : '<p class="recommendation-empty">尚未收藏。從左側推薦或月菜單加入喜歡的料理。</p>';
+    : '<p class="recommendation-empty">尚未收藏。從左側推薦或菜單加入喜歡的料理。</p>';
 }
 
 async function toggleRecommendedMeal(button) {

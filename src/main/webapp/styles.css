@@ -8605,3 +8605,24 @@ html[data-theme] .weight-dashboard {
   background: transparent;
   box-shadow: 0 0 40px rgba(0, 240, 255, 0.12);
 }
+
+.menu-preferences {
+  margin-top: 36px;
+}
+
+/* Square buttons with slightly rounded corners */
+html[data-theme] :is(button, .button, .header-cta, .nav-tab, .month-button, .weight-save-button, .weight-delete-button, .calendar-nav button, .theme-toggle, .text-size-control button):not(.day-button):not(.calendar-day) {
+  border-radius: 6px !important;
+}
+
+html[data-theme] .text-size-control,
+html[data-theme] .month-switch,
+html[data-theme] .calendar-nav,
+html[data-theme] .user-switcher {
+  border-radius: 8px !important;
+}
+
+html[data-theme] .nav-tab::after,
+html[data-theme] .nav-tab::before {
+  border-radius: 2px !important;
+}

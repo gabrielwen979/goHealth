@@ -23,7 +23,7 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20261030-checkin-neon2" />
+    <link rel="stylesheet" href="styles.css?v=20261030-square-btn" />
     <link
       rel="stylesheet"
       href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css"
@@ -36,7 +36,7 @@
     <script src="weather.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
     <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js" defer></script>
-    <script src="gohealth.js?v=20261030-checkin-neon2" defer></script>
+    <script src="gohealth.js?v=20261030-square-btn" defer></script>
   </head>
   <body>
     <main class="auth-gate" id="authGate">
@@ -115,7 +115,7 @@
           tabindex="0"
           data-tab-target="menu"
         >
-          月菜單
+          菜單
         </button>
         <button
           class="nav-tab"
@@ -506,39 +506,6 @@
           </div>
         </div>
         <p class="profile-sharing-note">健康紀錄會同步儲存在 goHealth 雲端資料庫。登入者只能存取自己的資料；管理者只管理帳號，不會看到其他人的健康紀錄。</p>
-        <form class="preferences-form" id="preferencesForm">
-          <div class="preference-field">
-            <label for="dietType">飲食偏好</label>
-            <select id="dietType">
-              <option value="keto">生酮／低醣（目前菜單）</option>
-              <option value="vegetarian">蛋奶素</option>
-              <option value="pescatarian">魚素（不吃肉類）</option>
-            </select>
-          </div>
-          <div class="preference-field">
-            <label for="avoidFoods">過敏或不吃的食材</label>
-            <input id="avoidFoods" type="text" maxlength="300" placeholder="以逗號分隔，例如：蝦, 花生, 牛奶" />
-          </div>
-          <button class="button button-dark" type="submit">儲存飲食偏好</button>
-        </form>
-        <div class="recommendations-panel">
-          <div>
-            <span class="eyebrow">SAVED & SUGGESTED MEALS</span>
-            <h3>我的推薦菜單</h3>
-            <p>依飲食偏好與排除食材，從本月不重複料理中挑選推薦菜色。</p>
-          </div>
-          <div class="recommendation-columns">
-            <div>
-              <h4>符合偏好的菜單</h4>
-              <div id="suggestedMeals" class="recommendation-list"></div>
-            </div>
-            <div>
-              <h4>已收藏</h4>
-              <div id="savedMeals" class="recommendation-list"></div>
-            </div>
-          </div>
-          <p class="profile-message" id="profileMessage" role="status" aria-live="polite"></p>
-        </div>
       </section>
 
       <section class="menu-section" id="menu" data-tab-panel="menu" role="tabpanel" aria-labelledby="menuTab" tabindex="0">
@@ -573,6 +540,42 @@
 
           <div class="day-overview" id="dayOverview" aria-live="polite"></div>
           <div class="meal-grid" id="mealGrid"></div>
+<div class="menu-preferences">
+        <form class="preferences-form" id="preferencesForm">
+          <div class="preference-field">
+            <label for="dietType">飲食偏好</label>
+            <select id="dietType">
+              <option value="keto">生酮／低醣（目前菜單）</option>
+              <option value="vegetarian">蛋奶素</option>
+              <option value="pescatarian">魚素（不吃肉類）</option>
+            </select>
+          </div>
+          <div class="preference-field">
+            <label for="avoidFoods">過敏或不吃的食材</label>
+            <input id="avoidFoods" type="text" maxlength="300" placeholder="以逗號分隔，例如：蝦, 花生, 牛奶" />
+          </div>
+          <button class="button button-dark" type="submit">儲存飲食偏好</button>
+        </form>
+        <div class="recommendations-panel">
+          <div>
+            <span class="eyebrow">SAVED & SUGGESTED MEALS</span>
+            <h3>我的推薦菜單</h3>
+            <p>依飲食偏好與排除食材，從本月不重複料理中挑選推薦菜色。</p>
+          </div>
+          <div class="recommendation-columns">
+            <div>
+              <h4>符合偏好的菜單</h4>
+              <div id="suggestedMeals" class="recommendation-list"></div>
+            </div>
+            <div>
+              <h4>已收藏</h4>
+              <div id="savedMeals" class="recommendation-list"></div>
+            </div>
+          </div>
+          <p class="profile-message" id="profileMessage" role="status" aria-live="polite"></p>
+        </div>
+          </div>
+
           <p class="nutrition-footnote">
             ※ 每份營養數值為一般食材資料庫的近似估算，實際值會因品牌、部位、可食重量及烹調用油而變動；淨碳水以總碳水減膳食纖維估算，請以產品標示與個人需求為準。
           </p>
