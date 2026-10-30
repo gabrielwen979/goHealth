@@ -506,26 +506,47 @@ function getMenuEntry(id) {
   return meal ? { id, day: null, meal } : null;
 }
 
-function isMealRecommended(entry) {
-  const ingredients = entry.meal.ingredients.join(" ");
+const dairyPattern = /牛奶|鮮奶|奶油|奶酪|乳酪|起司|優格|優酪|鮮奶油|奶粉|乳清|乳製品|帕瑪森|馬茲拉|莫札瑞拉|瑞可達|菲達|希臘優格|^乳|[^椰豆麥杏]奶/;
+
+function isMealAllowed(meal) {
+  const ingredients = `${meal.ingredients.join(" ")} ${meal.name}`;
   const avoided = profilePreferences.avoidFoods
     .split(/[,，、]/)
     .map((food) => food.trim())
     .filter(Boolean);
   if (avoided.some((food) => ingredients.includes(food))) return false;
+  if (profilePreferences.dietType === "dairyfree" && dairyPattern.test(ingredients.replace(/椰奶|豆奶|燕麥奶|杏仁奶|椰漿/g, ""))) {
+    return false;
+  }
   if (profilePreferences.dietType === "vegetarian" &&
-      /雞腿|雞胸|雞肉|雞絞肉|豬|牛|羊|鮭|鯖|鮪|魚|蝦|蛤|海鮮/.test(ingredients)) {
+      /雞腿|雞胸|雞肉|雞絞肉|豬|牛肉|牛排|牛絞肉|羊|鮭|鯖|鮪|魚|蝦|蛤|海鮮/.test(ingredients)) {
     return false;
   }
   if (profilePreferences.dietType === "pescatarian" &&
-      /雞腿|雞胸|雞肉|雞絞肉|豬|牛|羊/.test(ingredients)) {
+      /雞腿|雞胸|雞肉|雞絞肉|豬|牛肉|牛排|牛絞肉|羊/.test(ingredients)) {
     return false;
   }
   return true;
 }
 
+function isMealRecommended(entry) {
+  return isMealAllowed(entry.meal);
+}
+
 function formatMenuDay(day) {
   return day ? `${displayedMenuMonth.getMonth() + 1} 月 ${day} 日` : "整月推薦";
+}
+
+function rebuildMenuForPreferences() {
+  try {
+    buildMonthlyMeals(displayedMenuMonth);
+    profileMessage.textContent = "";
+  } catch (error) {
+    profileMessage.textContent = error.message;
+  }
+  renderRecommendationLists();
+  renderMeals();
+  renderShoppingList();
 }
 
 function renderRecommendationLists() {
@@ -579,7 +600,7 @@ async function activateProfile(user) {
     Array.isArray(profile.weightRecords) ||
     !profile.preferences ||
     typeof profile.preferences !== "object" ||
-    !["keto", "vegetarian", "pescatarian"].includes(profile.preferences.dietType) ||
+    !["keto", "vegetarian", "pescatarian", "dairyfree"].includes(profile.preferences.dietType) ||
     typeof profile.preferences.avoidFoods !== "string" ||
     !Array.isArray(profile.recommendedMeals) ||
     !profile.checkedItems ||
@@ -607,9 +628,7 @@ async function activateProfile(user) {
   avoidFoodsInput.value = profilePreferences.avoidFoods;
   weightFormMessage.textContent = "輸入體重後儲存；腰圍為選填，留空儲存會移除此日腰圍。";
   renderWeightCalendar();
-  renderShoppingList();
-  renderRecommendationLists();
-  renderMeals();
+  rebuildMenuForPreferences();
   updateBmi();
 }
 
@@ -1022,7 +1041,7 @@ async function initializeAuthentication() {
       dietType: dietTypeInput.value,
       avoidFoods: avoidFoodsInput.value.trim(),
     };
-    renderRecommendationLists();
+    rebuildMenuForPreferences();
     await saveProfileData();
   });
   document.querySelector(".recommendations-panel").addEventListener("click", async (event) => {
@@ -1585,12 +1604,18 @@ function buildMonthlyMeals(month) {
   }
   const regularMealCount = (daysInMonth - lunarVegetarianDays.length) * 2;
   const lunarVegetarianMealCount = lunarVegetarianDays.length * 2;
-  if (regularMeals.length < regularMealCount) {
-    throw new Error(`本月一般菜單需要 ${regularMealCount} 道不重複料理，目前可用食譜只有 ${regularMeals.length} 道。`);
+  const allowedRegular = regularMeals.filter(isMealAllowed);
+  let allowedLunar = lunarVegetarianMeals.filter(isMealAllowed);
+  if (!allowedLunar.length) {
+    allowedLunar = allowedRegular.filter((meal) => !/雞|豬|牛肉|牛排|羊|魚|鮭|鯖|鮪|蝦|蛤|海鮮|肉/.test(meal.ingredients.join(" ")));
   }
-  if (lunarVegetarianMeals.length < lunarVegetarianMealCount) {
-    throw new Error(`本月農曆初一、十五需要 ${lunarVegetarianMealCount} 道蛋奶素料理，目前只有 ${lunarVegetarianMeals.length} 道。`);
+  if (regularMealCount && !allowedRegular.length) {
+    throw new Error("目前飲食偏好與排除食材沒有可用的菜色，請放寬條件。");
   }
+  const takeMeals = (pool, start, count) => {
+    if (!pool.length) return [];
+    return Array.from({ length: count }, (_, i) => pool[(start + i) % pool.length]);
+  };
   const monthKey = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`;
   let seed = 2166136261;
   for (const character of monthKey) {
@@ -1608,18 +1633,18 @@ function buildMonthlyMeals(month) {
     }
     return shuffled;
   };
-  const shuffledRegularMeals = shuffle(regularMeals);
-  const shuffledLunarMeals = shuffle(lunarVegetarianMeals);
+  const shuffledRegularMeals = shuffle(allowedRegular);
+  const shuffledLunarMeals = shuffle(allowedLunar);
   let regularMealIndex = 0;
   let lunarMealIndex = 0;
   const lunarVegetarianDaySet = new Set(lunarVegetarianDays);
   monthlyMeals = Array.from({ length: daysInMonth }, (_, day) => {
     if (lunarVegetarianDaySet.has(day)) {
-      const dayMeals = shuffledLunarMeals.slice(lunarMealIndex, lunarMealIndex + 2);
+      const dayMeals = takeMeals(shuffledLunarMeals, lunarMealIndex, 2);
       lunarMealIndex += 2;
       return dayMeals;
     }
-    const dayMeals = shuffledRegularMeals.slice(regularMealIndex, regularMealIndex + 2);
+    const dayMeals = takeMeals(shuffledRegularMeals, regularMealIndex, 2);
     regularMealIndex += 2;
     return dayMeals;
   });
