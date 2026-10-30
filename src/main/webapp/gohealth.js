@@ -1094,6 +1094,7 @@ function renderWeightCalendar() {
   updateBmi();
   updateWeightSummary();
   renderWeightTrend();
+  renderHealthAnalytics();
   applyTextScale();
 }
 
@@ -1189,6 +1190,215 @@ function renderWeightTrend() {
     <text x="345" y="103" text-anchor="end" class="chart-axis-label">${daysInMonth} 日</text>
     <text x="15" y="12" class="chart-axis-label">${Math.max(...values).toFixed(1)} kg</text>
     <text x="345" y="12" text-anchor="end" class="chart-axis-label">${Math.min(...values).toFixed(1)} kg</text>`;
+}
+
+function gaugeArcPoint(cx, cy, r, t) {
+  return [cx - r * Math.cos(Math.PI * t), cy - r * Math.sin(Math.PI * t)];
+}
+
+function gaugeArc(cx, cy, r, t0, t1) {
+  const [x0, y0] = gaugeArcPoint(cx, cy, r, t0);
+  const [x1, y1] = gaugeArcPoint(cx, cy, r, t1);
+  return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+}
+
+function renderGauge(svg, { value, min, max, segments, label, decimals, status }) {
+  const cx = 100;
+  const cy = 100;
+  const r = 78;
+  const uid = svg.id;
+  const clamp = (v) => Math.min(Math.max((v - min) / (max - min), 0), 1);
+  const arcs = segments.map((seg, index) => {
+    const t0 = clamp(seg.from);
+    const t1 = clamp(seg.to);
+    return `<path d="${gaugeArc(cx, cy, r, t0, t1)}" stroke="${seg.color}" class="gauge-seg" filter="url(#${uid}Glow)" />`;
+  }).join("");
+  let needle = "";
+  let readout = `<text x="100" y="96" text-anchor="middle" class="gauge-value">—</text>`;
+  if (Number.isFinite(value)) {
+    const t = clamp(value);
+    const [nx, ny] = gaugeArcPoint(cx, cy, r - 16, t);
+    const [mx, my] = gaugeArcPoint(cx, cy, r + 4, t);
+    const active = segments.find((seg) => value >= seg.from && value < seg.to) || segments.at(-1);
+    needle = `<line x1="${nx.toFixed(2)}" y1="${ny.toFixed(2)}" x2="${mx.toFixed(2)}" y2="${my.toFixed(2)}" class="gauge-needle" stroke="${active.color}" />
+      <circle cx="${mx.toFixed(2)}" cy="${my.toFixed(2)}" r="3.5" class="gauge-hub" />`;
+    readout = `<text x="100" y="92" text-anchor="middle" class="gauge-value" fill="${active.color}">${value.toFixed(decimals)}</text>
+      <text x="100" y="116" text-anchor="middle" class="gauge-status" fill="${active.color}">${status(value)}</text>`;
+  } else {
+    readout += `<text x="100" y="124" text-anchor="middle" class="gauge-status">${label}</text>`;
+  }
+  const ticks = Array.from({ length: 11 }, (_, i) => {
+    const [x0, y0] = gaugeArcPoint(cx, cy, r + 8, i / 10);
+    const [x1, y1] = gaugeArcPoint(cx, cy, r + (i % 5 === 0 ? 14 : 11), i / 10);
+    return `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" class="gauge-tick" />`;
+  }).join("");
+  svg.innerHTML = `<defs><filter id="${uid}Glow" filterUnits="userSpaceOnUse" x="0" y="0" width="200" height="130"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    ${ticks}${arcs}${needle}${readout}
+    <text x="${cx - r}" y="${cy + 12}" text-anchor="middle" class="gauge-end">${min}</text>
+    <text x="${cx + r}" y="${cy + 12}" text-anchor="middle" class="gauge-end">${max}</text>`;
+}
+
+function renderHealthTrend(svg, entries) {
+  const width = 640;
+  const height = 230;
+  const pad = { top: 18, right: 46, bottom: 28, left: 46 };
+  if (entries.length === 0) {
+    svg.innerHTML = '<text x="320" y="115" text-anchor="middle" class="chart-empty-label">儲存體重後顯示科學趨勢分析</text>';
+    return;
+  }
+  const toTime = (key) => {
+    const [y, m, d] = key.split("-").map(Number);
+    return new Date(y, m - 1, d).getTime();
+  };
+  const times = entries.map(([key]) => toTime(key));
+  const t0 = times[0];
+  const t1 = Math.max(times.at(-1), t0 + 86400000 * 6);
+  const x = (time) => pad.left + ((time - t0) / (t1 - t0)) * (width - pad.left - pad.right);
+  const scale = (values, flip = true) => {
+    const lo = Math.min(...values);
+    const hi = Math.max(...values);
+    const span = Math.max(hi - lo, 1);
+    const min = lo - span * 0.15;
+    const max = hi + span * 0.15;
+    return { min, max, y: (v) => pad.top + (1 - (v - min) / (max - min)) * (height - pad.top - pad.bottom) };
+  };
+  const weights = entries.map(([, r]) => r.weight);
+  const ws = scale(weights);
+  const pts = entries.map(([key, r], i) => ({ x: x(times[i]), y: ws.y(r.weight), v: r.weight, key }));
+  const line = pts.map((p, i) => `${i ? "L" : "M"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+  const base = height - pad.bottom;
+  const area = `${line} L ${pts.at(-1).x.toFixed(1)} ${base} L ${pts[0].x.toFixed(1)} ${base} Z`;
+  const avgPts = pts.map((p, i) => {
+    const windowStart = times[i] - 6 * 86400000;
+    const inWindow = entries.filter((_, j) => times[j] <= times[i] && times[j] >= windowStart);
+    const avg = inWindow.reduce((sum, [, r]) => sum + r.weight, 0) / inWindow.length;
+    return { x: p.x, y: ws.y(avg) };
+  });
+  const avgLine = avgPts.map((p, i) => `${i ? "L" : "M"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+  const waistEntries = entries.filter(([, r]) => Number.isFinite(r.waist));
+  let waistMarkup = "";
+  let waistAxis = "";
+  if (waistEntries.length) {
+    const wsc = scale(waistEntries.map(([, r]) => r.waist));
+    const wp = waistEntries.map(([key, r]) => ({ x: x(toTime(key)), y: wsc.y(r.waist), v: r.waist, key }));
+    waistMarkup = `<path d="${wp.map((p, i) => `${i ? "L" : "M"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ")}" class="ht-waist" filter="url(#htGlow)" />` +
+      wp.map((p) => `<rect x="${(p.x - 3).toFixed(1)}" y="${(p.y - 3).toFixed(1)}" width="6" height="6" transform="rotate(45 ${p.x.toFixed(1)} ${p.y.toFixed(1)})" class="ht-waist-dot"><title>${p.key}：腰圍 ${p.v} cm</title></rect>`).join("");
+    waistAxis = `<text x="${width - 6}" y="${pad.top + 4}" text-anchor="end" class="ht-axis ht-axis-waist">${wsc.max.toFixed(0)} cm</text>
+      <text x="${width - 6}" y="${base}" text-anchor="end" class="ht-axis ht-axis-waist">${wsc.min.toFixed(0)} cm</text>`;
+  }
+  const grid = Array.from({ length: 5 }, (_, i) => {
+    const gy = pad.top + (i / 4) * (height - pad.top - pad.bottom);
+    return `<line x1="${pad.left}" x2="${width - pad.right}" y1="${gy.toFixed(1)}" y2="${gy.toFixed(1)}" class="ht-grid" />`;
+  }).join("");
+  const vgrid = Array.from({ length: 7 }, (_, i) => {
+    const gx = pad.left + (i / 6) * (width - pad.left - pad.right);
+    return `<line y1="${pad.top}" y2="${base}" x1="${gx.toFixed(1)}" x2="${gx.toFixed(1)}" class="ht-grid ht-grid-v" />`;
+  }).join("");
+  const fmt = (time) => {
+    const d = new Date(time);
+    return `${d.getMonth() + 1}/${d.getDate()}`;
+  };
+  const dots = pts.map((p) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.4" class="ht-dot"><title>${p.key}：${p.v} kg</title></circle>`).join("");
+  const last = pts.at(-1);
+  svg.innerHTML = `<defs>
+      <linearGradient id="htArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00f0ff" stop-opacity=".45"/><stop offset="1" stop-color="#7a5cff" stop-opacity="0"/></linearGradient>
+      <linearGradient id="htLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#b86bff"/></linearGradient>
+      <filter id="htGlow" filterUnits="userSpaceOnUse" x="0" y="0" width="640" height="230"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    ${grid}${vgrid}
+    <path d="${area}" fill="url(#htArea)" />
+    <path d="${line}" class="ht-line" filter="url(#htGlow)" />
+    <path d="${avgLine}" class="ht-avg" />
+    ${waistMarkup}${dots}
+    <circle cx="${last.x.toFixed(1)}" cy="${last.y.toFixed(1)}" r="7" class="ht-pulse" />
+    <text x="6" y="${pad.top + 4}" class="ht-axis">${ws.max.toFixed(1)} kg</text>
+    <text x="6" y="${base}" class="ht-axis">${ws.min.toFixed(1)} kg</text>
+    ${waistAxis}
+    <text x="${pad.left}" y="${height - 8}" class="ht-axis">${fmt(t0)}</text>
+    <text x="${width - pad.right}" y="${height - 8}" text-anchor="end" class="ht-axis">${fmt(t1)}</text>`;
+}
+
+function renderCheckinHeatmap(svg, streakLabel) {
+  const weeks = 12;
+  const cell = 15;
+  const gap = 4;
+  const left = 30;
+  const cellW = (640 - left - 4) / weeks - gap;
+  const top = 8;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const mondayOffset = (today.getDay() + 6) % 7;
+  const start = new Date(today);
+  start.setDate(today.getDate() - mondayOffset - (weeks - 1) * 7);
+  const cells = [];
+  for (let w = 0; w < weeks; w += 1) {
+    for (let d = 0; d < 7; d += 1) {
+      const date = new Date(start);
+      date.setDate(start.getDate() + w * 7 + d);
+      if (date > today) continue;
+      const key = formatDateKey(date);
+      const record = weightRecords[key];
+      const level = record ? (Number.isFinite(record.waist) ? "ww" : "w") : "none";
+      cells.push(`<rect x="${left + w * (cellW + gap)}" y="${top + d * (cell + gap)}" width="${cellW}" height="${cell}" rx="4" class="hm-cell hm-${level}"><title>${key}${record ? `：${record.weight ?? "—"} kg` : "：未登記"}</title></rect>`);
+    }
+  }
+  const dayNames = ["一", "", "三", "", "五", "", "日"].map((name, d) =>
+    name ? `<text x="6" y="${top + d * (cell + gap) + 12}" class="ht-axis">${name}</text>` : "").join("");
+  let streak = 0;
+  const cursor = new Date(today);
+  if (!weightRecords[formatDateKey(cursor)]) cursor.setDate(cursor.getDate() - 1);
+  while (weightRecords[formatDateKey(cursor)]) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  const total = Object.keys(weightRecords).length;
+  streakLabel.textContent = `連續 ${streak} 天 · 累計 ${total} 筆`;
+  svg.innerHTML = `${dayNames}${cells.join("")}`;
+}
+
+function renderHealthAnalytics() {
+  const bmiSvg = document.querySelector("#bmiGauge");
+  if (!bmiSvg) return;
+  const records = Object.entries(weightRecords)
+    .filter(([, record]) => Number.isFinite(record.weight))
+    .sort(([a], [b]) => a.localeCompare(b));
+  const latest = records.at(-1)?.[1];
+  const height = Number(heightCm);
+  const hasHeight = Number.isFinite(height) && height >= 100 && height <= 250;
+  const bmi = latest && hasHeight ? latest.weight / (height / 100) ** 2 : NaN;
+  renderGauge(bmiSvg, {
+    value: bmi,
+    min: 10,
+    max: 40,
+    label: hasHeight ? "尚無體重" : "請先設定身高",
+    decimals: 1,
+    segments: [
+      { from: 10, to: 18.5, color: "#38bdf8" },
+      { from: 18.5, to: 24, color: "#34f5a8" },
+      { from: 24, to: 27, color: "#facc15" },
+      { from: 27, to: 30, color: "#fb923c" },
+      { from: 30, to: 41, color: "#ff4d7d" },
+    ],
+    status: (v) => (v < 18.5 ? "體重過輕" : v < 24 ? "健康體位" : v < 27 ? "過重" : v < 30 ? "輕度肥胖" : "中重度肥胖"),
+  });
+  const waistRecord = records.slice().reverse().find(([, record]) => Number.isFinite(record.waist));
+  const whtr = waistRecord && hasHeight ? waistRecord[1].waist / height : NaN;
+  renderGauge(document.querySelector("#whtrGauge"), {
+    value: whtr,
+    min: 0.3,
+    max: 0.7,
+    label: hasHeight ? "尚無腰圍" : "請先設定身高",
+    decimals: 2,
+    segments: [
+      { from: 0.3, to: 0.4, color: "#38bdf8" },
+      { from: 0.4, to: 0.5, color: "#34f5a8" },
+      { from: 0.5, to: 0.6, color: "#fb923c" },
+      { from: 0.6, to: 0.71, color: "#ff4d7d" },
+    ],
+    status: (v) => (v < 0.4 ? "偏瘦" : v < 0.5 ? "理想範圍" : v < 0.6 ? "內臟脂肪風險" : "高風險"),
+  });
+  renderHealthTrend(document.querySelector("#healthTrendChart"), records.slice(-60));
+  renderCheckinHeatmap(document.querySelector("#checkinHeatmap"), document.querySelector("#healthStreak"));
 }
 
 function saveWeightRecords() {
