@@ -1050,7 +1050,7 @@ async function initializeAuthentication() {
 function renderWeightCalendar() {
   const year = displayedCalendarMonth.getFullYear();
   const month = displayedCalendarMonth.getMonth();
-  const firstWeekday = new Date(year, month, 1).getDay();
+  const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   calendarMonthLabel.textContent = displayedCalendarMonth.toLocaleDateString("zh-TW", {
     year: "numeric",
@@ -1300,7 +1300,7 @@ function renderDayPicker() {
   const year = displayedMenuMonth.getFullYear();
   const month = displayedMenuMonth.getMonth();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstWeekday = new Date(year, month, 1).getDay();
+  const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
   menuMonthLabel.textContent = displayedMenuMonth.toLocaleDateString("zh-TW", {
     year: "numeric",
     month: "long",
