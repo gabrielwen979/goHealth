@@ -599,7 +599,9 @@ async function activateProfile(user) {
   checkedItems = profile.checkedItems;
   storageAvailable = true;
   profileName.textContent = currentUser.displayName;
-  userIdentity.textContent = `${currentUser.displayName} · ${user.email}`;
+  const shortName = currentUser.displayName.split("@")[0] || currentUser.displayName;
+  userIdentity.textContent = shortName;
+  userIdentity.title = user.email;
   heightInput.value = heightCm ?? "";
   dietTypeInput.value = profilePreferences.dietType;
   avoidFoodsInput.value = profilePreferences.avoidFoods;
