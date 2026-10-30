@@ -1356,6 +1356,143 @@ function renderCheckinHeatmap(svg, streakLabel) {
   svg.innerHTML = `${dayNames}${cells.join("")}`;
 }
 
+function lastDaysRate(field, days) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let hit = 0;
+  for (let i = 0; i < days; i += 1) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const record = weightRecords[formatDateKey(date)];
+    if (record && Number.isFinite(record[field])) hit += 1;
+  }
+  return hit / days;
+}
+
+function ringArc(cx, cy, r, ratio) {
+  const t = Math.min(Math.max(ratio, 0), 0.9999) * Math.PI * 2;
+  const x = cx + r * Math.sin(t);
+  const y = cy - r * Math.cos(t);
+  return `M ${cx} ${cy - r} A ${r} ${r} 0 ${t > Math.PI ? 1 : 0} 1 ${x.toFixed(2)} ${y.toFixed(2)}`;
+}
+
+function renderBodyScan(svg, info) {
+  const { weight, waist, bmi, whtr } = info;
+  const widthScale = Number.isFinite(bmi) ? Math.min(Math.max(bmi / 22, 0.8), 1.35) : 1;
+  const waistScale = Number.isFinite(whtr) ? Math.min(Math.max(whtr / 0.46, 0.85), 1.4) : widthScale;
+  const color = Number.isFinite(bmi) ? (bmi < 18.5 ? "#38bdf8" : bmi < 24 ? "#34f5a8" : bmi < 27 ? "#facc15" : bmi < 30 ? "#fb923c" : "#ff4d7d") : "#00f0ff";
+  const fmt = (v, d, unit) => (Number.isFinite(v) ? `${v.toFixed(d)}${unit}` : "—");
+  const healthy = Number.isFinite(bmi) ? Math.max(0, 1 - Math.max(18.5 - bmi, bmi - 24, 0) / 8) : 0;
+  const rings = [
+    { label: "01", name: "30 日登記率", ratio: lastDaysRate("weight", 30), color: "#00f0ff" },
+    { label: "02", name: "腰圍登記率", ratio: lastDaysRate("waist", 30), color: "#34f5a8" },
+    { label: "03", name: "健康體位接近度", ratio: healthy, color: "#ff4d7d" },
+  ];
+  const cx = 565;
+  const cy = 140;
+  const ringMarkup = rings.map((ring, i) => {
+    const r = 112 - i * 26;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" class="bs-track" />
+      <path d="${ringArc(cx, cy, r, ring.ratio)}" class="bs-ring" style="stroke:${ring.color}" filter="url(#bsGlow)" />`;
+  }).join("");
+  const ringLabels = rings.map((ring, i) => {
+    const y = 292 + i * 17;
+    return `<text x="440" y="${y}" class="bs-num" style="fill:${ring.color}">${ring.label}</text>
+      <text x="468" y="${y}" class="bs-note">${ring.name} ${Math.round(ring.ratio * 100)}%</text>`;
+  }).join("");
+  const calls = [
+    { y: 70, ty: 62, name: "WEIGHT 體重", value: fmt(weight, 1, " kg"), bx: 292, by: 92 },
+    { y: 150, ty: 142, name: "BMI", value: fmt(bmi, 1, ""), bx: 266, by: 120 },
+    { y: 230, ty: 222, name: "WAIST 腰圍", value: fmt(waist, 1, " cm"), bx: 90 + 120 - 28 * waistScale + 8, by: 160 },
+    { y: 290, ty: 282, name: "WHtR 腰身比", value: fmt(whtr, 2, ""), bx: 276, by: 190 },
+  ].map((c) => `<polyline points="20,${c.y} 150,${c.y} ${c.bx.toFixed(0)},${c.by}" class="bs-lead" />
+      <circle cx="${c.bx.toFixed(0)}" cy="${c.by}" r="3" class="bs-lead-dot" />
+      <text x="20" y="${c.ty - 2}" class="bs-note">${c.name}</text>
+      <text x="20" y="${c.ty + 18}" class="bs-readout" style="fill:${color}">${c.value}</text>`).join("");
+  svg.innerHTML = `<defs>
+      <filter id="bsGlow" filterUnits="userSpaceOnUse" x="0" y="0" width="700" height="345"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <linearGradient id="bsScan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity="0"/><stop offset="1" stop-color="${color}" stop-opacity=".55"/></linearGradient>
+      <clipPath id="bsClip"><rect x="0" y="0" width="200" height="316" /></clipPath>
+    </defs>
+    ${calls}
+    <g transform="translate(190 8)">
+      <g transform="translate(100 0) scale(${waistScale.toFixed(3)} 1) translate(-100 0)" style="color:${color}">
+        <g transform="translate(100 0) scale(${(widthScale / waistScale).toFixed(3)} 1) translate(-100 0)">
+          <circle cx="100" cy="34" r="20" class="bs-body" />
+          <path d="M92 52 L92 62 L70 68 L40 84 L26 156 L40 160 L54 106 L60 160 L62 280 L90 312 L98 312 L100 196 L102 312 L110 312 L138 280 L140 160 L146 106 L160 160 L174 156 L160 84 L130 68 L108 62 L108 52" class="bs-body" />
+          <path d="M84 84 Q100 76 116 84 L118 128 Q100 138 82 128 Z" class="bs-organ" />
+          <circle cx="104" cy="104" r="8" class="bs-heart" />
+          <path d="M86 150 Q100 160 114 150 L112 172 Q100 180 88 172 Z" class="bs-organ" />
+        </g>
+      </g>
+      <rect x="0" y="0" width="200" height="22" fill="url(#bsScan)" clip-path="url(#bsClip)" class="bs-scan" />
+    </g>
+    ${ringMarkup}${ringLabels}
+    <circle cx="${cx}" cy="${cy}" r="30" class="bs-core" />
+    <text x="${cx}" y="${cy + 5}" text-anchor="middle" class="bs-core-text">${Math.round(rings[0].ratio * 100)}%</text>`;
+}
+
+function renderWeeklyBars(svg, records) {
+  if (!records.length) {
+    svg.innerHTML = '<text x="160" y="95" text-anchor="middle" class="chart-empty-label">儲存體重後顯示每週平均</text>';
+    return;
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+  const weeks = [];
+  for (let w = 7; w >= 0; w -= 1) {
+    const start = new Date(monday);
+    start.setDate(monday.getDate() - w * 7);
+    const values = [];
+    for (let d = 0; d < 7; d += 1) {
+      const date = new Date(start);
+      date.setDate(start.getDate() + d);
+      const record = weightRecords[formatDateKey(date)];
+      if (record && Number.isFinite(record.weight)) values.push(record.weight);
+    }
+    weeks.push({ start, avg: values.length ? values.reduce((a, b) => a + b, 0) / values.length : null });
+  }
+  const known = weeks.filter((w) => w.avg !== null).map((w) => w.avg);
+  if (!known.length) {
+    svg.innerHTML = '<text x="160" y="95" text-anchor="middle" class="chart-empty-label">近 8 週尚無體重紀錄</text>';
+    return;
+  }
+  const lo = Math.min(...known) - 1;
+  const hi = Math.max(...known) + 1;
+  const bw = 28;
+  const gap = 10;
+  const base = 160;
+  const topY = 34;
+  const bars = weeks.map((w, i) => {
+    const x = 12 + i * (bw + gap);
+    if (w.avg === null) {
+      return `<rect x="${x}" y="${base - 4}" width="${bw}" height="4" rx="2" class="wb-empty" /><text x="${x + bw / 2}" y="178" text-anchor="middle" class="ht-axis">${w.start.getMonth() + 1}/${w.start.getDate()}</text>`;
+    }
+    const h = 6 + ((w.avg - lo) / (hi - lo)) * (base - topY - 6);
+    const prev = weeks.slice(0, i).reverse().find((p) => p.avg !== null);
+    const cls = !prev ? "wb-first" : w.avg <= prev.avg ? "wb-down" : "wb-up";
+    return `<rect x="${x}" y="${(base - h).toFixed(1)}" width="${bw}" height="${h.toFixed(1)}" rx="4" class="wb-bar ${cls}"><title>${w.start.getMonth() + 1}/${w.start.getDate()} 當週平均 ${w.avg.toFixed(1)} kg</title></rect>
+      <text x="${x + bw / 2}" y="${(base - h - 5).toFixed(1)}" text-anchor="middle" class="wb-val">${w.avg.toFixed(1)}</text>
+      <text x="${x + bw / 2}" y="178" text-anchor="middle" class="ht-axis">${w.start.getMonth() + 1}/${w.start.getDate()}</text>`;
+  }).join("");
+  svg.innerHTML = `<line x1="8" x2="312" y1="${base}" y2="${base}" class="ht-grid" style="stroke-dasharray:none" />${bars}`;
+}
+
+function renderVitalMonitor(svg, info) {
+  const fmt = (v, d) => (Number.isFinite(v) ? v.toFixed(d) : "—");
+  const beat = "M0 95 H30 L36 95 L42 70 L50 120 L56 38 L64 140 L70 95 H110 L116 90 L124 80 L132 90 L138 95 H180 L186 95 L192 70 L200 120 L206 38 L214 140 L220 95 H260 L266 90 L274 80 L282 90 L288 95 H320";
+  svg.innerHTML = `<defs><filter id="vmGlow" filterUnits="userSpaceOnUse" x="0" y="0" width="320" height="190"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <path d="M6 22 V6 H30 M290 6 H314 V22 M314 168 V184 H290 M30 184 H6 V168" class="vm-corner" />
+    <g transform="translate(0 -18) scale(1 .7)"><path d="${beat}" class="vm-ecg-base" /><path d="${beat}" class="vm-ecg" filter="url(#vmGlow)" /></g>
+    <line x1="14" x2="306" y1="100" y2="100" class="ht-grid" />
+    <text x="16" y="124" class="vm-label">WEIGHT</text><text x="16" y="150" class="vm-value">${fmt(info.weight, 1)}<tspan class="vm-unit"> kg</tspan></text>
+    <text x="112" y="124" class="vm-label">BMI</text><text x="112" y="150" class="vm-value">${fmt(info.bmi, 1)}</text>
+    <text x="180" y="124" class="vm-label">WAIST</text><text x="180" y="150" class="vm-value">${fmt(info.waist, 1)}<tspan class="vm-unit"> cm</tspan></text>
+    <text x="16" y="176" class="vm-label">WHtR ${fmt(info.whtr, 2)}</text>`;
+}
+
 function renderHealthAnalytics() {
   const bmiSvg = document.querySelector("#bmiGauge");
   if (!bmiSvg) return;
@@ -1397,6 +1534,10 @@ function renderHealthAnalytics() {
     ],
     status: (v) => (v < 0.4 ? "偏瘦" : v < 0.5 ? "理想範圍" : v < 0.6 ? "內臟脂肪風險" : "高風險"),
   });
+  const info = { weight: latest?.weight, waist: waistRecord?.[1].waist, bmi, whtr };
+  renderBodyScan(document.querySelector("#bodyScan"), info);
+  renderWeeklyBars(document.querySelector("#weeklyBars"), records);
+  renderVitalMonitor(document.querySelector("#vitalMonitor"), info);
   renderHealthTrend(document.querySelector("#healthTrendChart"), records.slice(-60));
   renderCheckinHeatmap(document.querySelector("#checkinHeatmap"), document.querySelector("#healthStreak"));
 }

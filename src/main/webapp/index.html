@@ -23,7 +23,7 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20261030-health-light" />
+    <link rel="stylesheet" href="styles.css?v=20261030-health-hud" />
     <link
       rel="stylesheet"
       href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css"
@@ -36,7 +36,7 @@
     <script src="weather.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
     <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js" defer></script>
-    <script src="gohealth.js?v=20261030-health-light" defer></script>
+    <script src="gohealth.js?v=20261030-health-hud" defer></script>
   </head>
   <body>
     <main class="auth-gate" id="authGate">
@@ -786,6 +786,18 @@
           </div>
         </div>
         <div class="health-analytics" aria-label="健康數據分析">
+          <div class="analytics-card analytics-wide hud-card">
+            <div class="analytics-title"><span>BODY SCAN</span><strong>全身掃描 · 體態與登記同心環</strong><em id="bodyScanStatus">SCANNING</em></div>
+            <svg id="bodyScan" viewBox="0 0 700 345" role="img" aria-label="人體掃描面板"></svg>
+          </div>
+          <div class="analytics-card hud-card">
+            <div class="analytics-title"><span>WEEKLY AVG</span><strong>近 8 週平均體重</strong></div>
+            <svg id="weeklyBars" viewBox="0 0 320 190" role="img" aria-label="每週平均體重長條圖"></svg>
+          </div>
+          <div class="analytics-card hud-card">
+            <div class="analytics-title"><span>VITAL MONITOR</span><strong>生命監測</strong></div>
+            <svg id="vitalMonitor" viewBox="0 0 320 190" role="img" aria-label="生命監測面板"></svg>
+          </div>
           <div class="analytics-card">
             <div class="analytics-title"><span>BMI SCAN</span><strong>身體質量指數</strong></div>
             <svg id="bmiGauge" viewBox="0 0 200 128" role="img" aria-label="BMI 儀表"></svg>
