@@ -1222,8 +1222,8 @@ function renderGauge(svg, { value, min, max, segments, label, decimals, status }
     const active = segments.find((seg) => value >= seg.from && value < seg.to) || segments.at(-1);
     needle = `<line x1="${nx.toFixed(2)}" y1="${ny.toFixed(2)}" x2="${mx.toFixed(2)}" y2="${my.toFixed(2)}" class="gauge-needle" stroke="${active.color}" />
       <circle cx="${mx.toFixed(2)}" cy="${my.toFixed(2)}" r="3.5" class="gauge-hub" />`;
-    readout = `<text x="100" y="92" text-anchor="middle" class="gauge-value" fill="${active.color}">${value.toFixed(decimals)}</text>
-      <text x="100" y="116" text-anchor="middle" class="gauge-status" fill="${active.color}">${status(value)}</text>`;
+    readout = `<text x="100" y="92" text-anchor="middle" class="gauge-value" style="fill:${active.color}">${value.toFixed(decimals)}</text>
+      <text x="100" y="116" text-anchor="middle" class="gauge-status" style="fill:${active.color}">${status(value)}</text>`;
   } else {
     readout += `<text x="100" y="124" text-anchor="middle" class="gauge-status">${label}</text>`;
   }

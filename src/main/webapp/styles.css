@@ -7984,3 +7984,129 @@ html[data-theme="light"] .travel-checklist li strong {
     stroke-dashoffset: 0;
   }
 }
+
+/* Health analytics: light theme */
+html[data-theme="light"] .analytics-card {
+  border-color: rgba(70, 110, 200, 0.22);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(167, 139, 250, 0.2), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.18), transparent 50%),
+    linear-gradient(160deg, #ffffff, #eef3ff);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.08), 0 10px 28px rgba(60, 80, 140, 0.14);
+  color: #243253;
+}
+
+html[data-theme="light"] .analytics-card::before {
+  background-image:
+    linear-gradient(rgba(70, 110, 200, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(70, 110, 200, 0.07) 1px, transparent 1px);
+}
+
+html[data-theme="light"] .analytics-card::after {
+  background: linear-gradient(90deg, transparent, #0ea5e9, #8b5cf6, transparent);
+}
+
+html[data-theme="light"] .analytics-title span {
+  color: #0369a1;
+  text-shadow: none;
+}
+
+html[data-theme="light"] .analytics-title strong {
+  color: #16213f;
+}
+
+html[data-theme="light"] .analytics-title em {
+  color: #047857;
+  text-shadow: none;
+}
+
+html[data-theme="light"] .gauge-value {
+  filter: none;
+}
+
+html[data-theme="light"] .gauge-seg {
+  opacity: 1;
+}
+
+html[data-theme="light"] .gauge-tick {
+  stroke: rgba(70, 90, 150, 0.4);
+}
+
+html[data-theme="light"] .gauge-hub {
+  fill: #ffffff;
+  stroke: #243253;
+}
+
+html[data-theme="light"] .gauge-status {
+  fill: #475a85;
+}
+
+html[data-theme="light"] .gauge-end,
+html[data-theme="light"] .ht-axis {
+  fill: #5b6c94;
+}
+
+html[data-theme="light"] .ht-axis-waist {
+  fill: #be1e8f;
+}
+
+html[data-theme="light"] .ht-grid {
+  stroke: rgba(70, 110, 200, 0.2);
+}
+
+html[data-theme="light"] .ht-grid-v {
+  stroke: rgba(70, 110, 200, 0.1);
+}
+
+html[data-theme="light"] .ht-avg {
+  stroke: #d97706;
+}
+
+html[data-theme="light"] .ht-waist {
+  stroke: #d6249f;
+}
+
+html[data-theme="light"] .ht-waist-dot {
+  fill: #d6249f;
+}
+
+html[data-theme="light"] .ht-dot {
+  fill: #ffffff;
+  stroke: #0284c7;
+}
+
+html[data-theme="light"] .ht-pulse {
+  stroke: #0284c7;
+}
+
+html[data-theme="light"] .hm-cell {
+  stroke: rgba(70, 110, 200, 0.18);
+}
+
+html[data-theme="light"] .hm-none {
+  fill: rgba(70, 110, 200, 0.08);
+}
+
+html[data-theme="light"] .hm-w {
+  fill: #38bdf8;
+  filter: none;
+}
+
+html[data-theme="light"] .hm-ww {
+  fill: #10b981;
+  filter: none;
+}
+
+html[data-theme="light"] .analytics-legend {
+  color: #475a85;
+}
+
+html[data-theme="light"] .lg-none { background: rgba(70, 110, 200, 0.18); }
+html[data-theme="light"] .lg-w { background: #38bdf8; }
+html[data-theme="light"] .lg-ww { background: #10b981; }
+
+html[data-theme="light"] .gauge-value {
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 2px;
+}
