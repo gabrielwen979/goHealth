@@ -8626,3 +8626,22 @@ html[data-theme] .nav-tab::after,
 html[data-theme] .nav-tab::before {
   border-radius: 2px !important;
 }
+
+html[data-theme="light"] .preferences-form {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(238, 244, 255, 0.92)) !important;
+  border: 1px solid rgba(99, 102, 241, 0.25) !important;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.08) !important;
+  color: #1f2937 !important;
+}
+
+html[data-theme="light"] .preferences-form label,
+html[data-theme="light"] .preferences-form span {
+  color: #334155 !important;
+}
+
+html[data-theme="light"] .preferences-form select,
+html[data-theme="light"] .preferences-form input[type="text"] {
+  background: #fff !important;
+  color: #1f2937 !important;
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
