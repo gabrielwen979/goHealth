@@ -23,7 +23,7 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20261030-order" />
+    <link rel="stylesheet" href="styles.css?v=20261030-side" />
     <link
       rel="stylesheet"
       href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css"
@@ -36,7 +36,7 @@
     <script src="weather.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
     <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js" defer></script>
-    <script src="gohealth.js?v=20261030-order" defer></script>
+    <script src="gohealth.js?v=20261030-side" defer></script>
   </head>
   <body>
     <main class="auth-gate" id="authGate">
@@ -723,17 +723,6 @@
       </section>
 
       <section class="weight-section section-wrap" id="weight" data-tab-panel="profile" role="tabpanel" aria-labelledby="profileTab" tabindex="0" hidden>
-        <div class="weight-intro">
-          <p class="eyebrow">YOUR PERSONAL PROGRESS</p>
-          <h2>用自己的節奏，<br /><em>記錄每一步。</em></h2>
-          <p>選取日期並輸入體重，看看自己的月度變化。紀錄會依目前選取的使用者分開保存在伺服器。</p>
-          <div class="weight-summary-grid">
-            <div class="weight-stat"><span>本月最新</span><strong id="latestWeight">—</strong></div>
-            <div class="weight-stat"><span>本月變化</span><strong id="weightChange">—</strong></div>
-            <div class="weight-stat"><span>本月最新腰圍</span><strong id="latestWaist">—</strong></div>
-          </div>
-          <p class="weight-privacy">體重是趨勢參考，不代表單日健康結果；水分、進食與測量時間都會造成自然波動。</p>
-        </div>
         <div class="health-analytics" aria-label="健康數據分析">
           <div class="analytics-card analytics-wide hud-card">
             <div class="analytics-title"><span>BODY SCAN</span><strong>全身掃描 · 體態與登記同心環</strong><em id="bodyScanStatus">SCANNING</em></div>
@@ -819,6 +808,14 @@
               <svg id="weightTrendChart" viewBox="0 0 360 110" role="img" aria-label="本月體重趨勢圖"></svg>
             </div>
           </div>
+          <aside class="weight-side">
+            <div class="weight-summary-grid">
+              <div class="weight-stat"><span>本月最新</span><strong id="latestWeight">—</strong></div>
+              <div class="weight-stat"><span>本月變化</span><strong id="weightChange">—</strong></div>
+              <div class="weight-stat"><span>本月最新腰圍</span><strong id="latestWaist">—</strong></div>
+            </div>
+            <p class="weight-privacy">體重是趨勢參考，不代表單日健康結果；水分、進食與測量時間都會造成自然波動。</p>
+          </aside>
         </div>
       </section>
 
