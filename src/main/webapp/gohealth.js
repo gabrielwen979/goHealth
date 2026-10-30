@@ -1418,8 +1418,8 @@ function renderBodyScan(svg, info) {
     <g transform="translate(190 8)">
       <g transform="translate(100 0) scale(${waistScale.toFixed(3)} 1) translate(-100 0)" style="color:${color}">
         <g transform="translate(100 0) scale(${(widthScale / waistScale).toFixed(3)} 1) translate(-100 0)">
-          <circle cx="100" cy="34" r="20" class="bs-body" />
-          <path d="M92 52 L92 62 L70 68 L40 84 L26 156 L40 160 L54 106 L60 160 L62 280 L90 312 L98 312 L100 196 L102 312 L110 312 L138 280 L140 160 L146 106 L160 160 L174 156 L160 84 L130 68 L108 62 L108 52" class="bs-body" />
+          <ellipse cx="100" cy="30" rx="16" ry="20" class="bs-body" />
+          <path d="M93 49 C93 58 92 62 86 65 C70 69 52 73 46 88 C40 104 38 130 34 156 C32 166 30 174 33 180 C37 184 42 178 44 170 C48 150 52 126 58 110 C60 130 68 145 66 160 C64 175 58 190 62 205 C64 235 64 262 66 290 C67 300 66 308 68 312 L92 312 C94 296 96 260 98 232 L100 220 L102 232 C104 260 106 296 108 312 L132 312 C134 308 133 300 134 290 C136 262 136 235 138 205 C142 190 136 175 134 160 C132 145 140 130 142 110 C148 126 152 150 156 170 C158 178 163 184 167 180 C170 174 168 166 166 156 C162 130 160 104 154 88 C148 73 130 69 114 65 C108 62 107 58 107 49" class="bs-body" />
           <path d="M84 84 Q100 76 116 84 L118 128 Q100 138 82 128 Z" class="bs-organ" />
           <circle cx="104" cy="104" r="8" class="bs-heart" />
           <path d="M86 150 Q100 160 114 150 L112 172 Q100 180 88 172 Z" class="bs-organ" />

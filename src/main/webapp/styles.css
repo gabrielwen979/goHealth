@@ -8712,3 +8712,8 @@ html[data-theme="light"] .preferences-form input[type="text"] {
 #weight .weight-dashboard {
   grid-column: 1 / -1;
 }
+
+.bs-body {
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
