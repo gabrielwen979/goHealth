@@ -1353,8 +1353,7 @@ function renderDayPicker() {
         ? '<span class="menu-day-note weekend-note">週末</span>'
         : "",
     ].filter(Boolean).join("");
-    const notes = calendarNotes ||
-      '<span class="menu-day-note meal-note">午晚餐</span>';
+    const notes = calendarNotes;
     return `<button class="${classes}" type="button" data-menu-date="${dateKey}" aria-pressed="${isSelected}" aria-label="${month + 1} 月 ${day} 日${dayLabel ? `，${dayLabel}` : ""}：${escapeHtml(mealNames)}"${holidayName ? ` title="${escapeHtml(holidayName)}"` : ""}>
       <span class="menu-day-date">
         <span class="menu-day-weekday">週${["日", "一", "二", "三", "四", "五", "六"][date.getDay()]}</span>
