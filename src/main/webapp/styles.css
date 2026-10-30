@@ -8717,3 +8717,12 @@ html[data-theme="light"] .preferences-form input[type="text"] {
   stroke-width: 1.8;
   stroke-linecap: round;
 }
+
+#suggestedMeals,
+#savedMeals {
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 6px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
