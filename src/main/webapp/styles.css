@@ -7600,38 +7600,46 @@ html[data-theme="light"] .travel-checklist li strong {
   line-height: 1;
 }
 
-@media (max-width: 580px) {
-  .day-picker-wrap:has(.menu-weekdays) .day-button {
+@media (max-width: 700px) {
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .day-button {
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
+    align-content: center;
     gap: 3px;
-    padding: 4px 1px;
+    padding: 5px 1px;
+    text-align: center;
   }
 
-  .day-picker-wrap:has(.menu-weekdays) .menu-day-date {
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-date {
     justify-items: center;
   }
 
-  .day-picker-wrap:has(.menu-weekdays) .menu-day-notes {
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-notes {
     flex-direction: column;
     justify-content: center;
     gap: 1px;
+    max-width: 100%;
   }
 
-  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note {
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note,
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.weekend-note,
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.meal-note,
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.lunar-note,
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.holiday-note {
+    display: block;
     max-width: 100%;
     padding: 0;
     border: 0;
     border-radius: 0;
     background: transparent;
-    font-size: 0;
-    line-height: 1.15;
+    font-size: 7px !important;
+    font-weight: 600;
+    line-height: 1.2;
     text-align: center;
     text-overflow: clip;
   }
 
-  .day-picker-wrap:has(.menu-weekdays) .menu-day-note.lunar-note::after,
-  .day-picker-wrap:has(.menu-weekdays) .menu-day-note.holiday-note::after {
-    font-size: 7px;
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note::after {
+    content: none !important;
   }
 }
