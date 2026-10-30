@@ -7651,24 +7651,23 @@ html[data-theme="light"] .travel-checklist li strong {
   }
 
   .site-header .header-actions {
-    display: grid;
+    display: flex;
     min-width: 0;
-    grid-template-columns: minmax(0, 1fr) auto;
-    justify-items: end;
-    gap: 6px;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
   }
 
   .site-header .user-switcher {
-    grid-column: 1 / -1;
-    width: 100%;
     min-width: 0;
-    justify-content: flex-end;
-    gap: 8px;
+    flex: 0 1 auto;
+    gap: 4px;
   }
 
   .site-header #userIdentity {
     min-width: 0;
-    flex: 0 1 auto;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -7681,19 +7680,34 @@ html[data-theme="light"] .travel-checklist li strong {
     white-space: nowrap;
   }
 
-  .site-header .theme-toggle {
-    order: 0;
-    grid-column: 1;
-    min-height: 30px;
-    padding: 4px 10px;
+  .site-header .user-switcher button {
+    padding: 6px 9px;
     writing-mode: horizontal-tb;
   }
 
-  .site-header .text-size-control {
-    grid-column: 2;
+  .site-header .theme-toggle {
+    order: 0;
+    width: 30px;
+    min-height: 30px;
+    padding: 0;
+    writing-mode: horizontal-tb;
+  }
+
+  .site-header .theme-toggle-label {
+    display: none;
+  }
+
+  .site-header .text-size-control output {
+    min-width: 0;
   }
 
   .site-header .header-cta {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .site-header .text-size-control output {
     display: none;
   }
 }
