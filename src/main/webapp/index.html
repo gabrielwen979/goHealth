@@ -23,7 +23,7 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20261030-pref-light" />
+    <link rel="stylesheet" href="styles.css?v=20261030-order" />
     <link
       rel="stylesheet"
       href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css"
@@ -36,7 +36,7 @@
     <script src="weather.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
     <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js" defer></script>
-    <script src="gohealth.js?v=20261030-pref-light" defer></script>
+    <script src="gohealth.js?v=20261030-order" defer></script>
   </head>
   <body>
     <main class="auth-gate" id="authGate">
@@ -734,6 +734,38 @@
           </div>
           <p class="weight-privacy">體重是趨勢參考，不代表單日健康結果；水分、進食與測量時間都會造成自然波動。</p>
         </div>
+        <div class="health-analytics" aria-label="健康數據分析">
+          <div class="analytics-card analytics-wide hud-card">
+            <div class="analytics-title"><span>BODY SCAN</span><strong>全身掃描 · 體態與登記同心環</strong><em id="bodyScanStatus">SCANNING</em></div>
+            <svg id="bodyScan" viewBox="0 0 700 345" role="img" aria-label="人體掃描面板"></svg>
+          </div>
+          <div class="analytics-card hud-card">
+            <div class="analytics-title"><span>WEEKLY AVG</span><strong>近 8 週平均體重</strong></div>
+            <svg id="weeklyBars" viewBox="0 0 320 190" role="img" aria-label="每週平均體重長條圖"></svg>
+          </div>
+          <div class="analytics-card hud-card">
+            <div class="analytics-title"><span>VITAL MONITOR</span><strong>生命監測</strong></div>
+            <svg id="vitalMonitor" viewBox="0 0 320 190" role="img" aria-label="生命監測面板"></svg>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-title"><span>BMI SCAN</span><strong>身體質量指數</strong></div>
+            <svg id="bmiGauge" viewBox="0 0 200 128" role="img" aria-label="BMI 儀表"></svg>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-title"><span>WAIST / HEIGHT</span><strong>腰身比 WHtR</strong></div>
+            <svg id="whtrGauge" viewBox="0 0 200 128" role="img" aria-label="腰身比儀表"></svg>
+          </div>
+          <div class="analytics-card analytics-wide">
+            <div class="analytics-title"><span>BIO-METRIC TREND</span><strong>體重 · 腰圍 · 7 日移動平均</strong></div>
+            <svg id="healthTrendChart" viewBox="0 0 640 230" role="img" aria-label="體重與腰圍趨勢圖"></svg>
+            <div class="analytics-legend"><i class="lg-weight"></i>體重 <i class="lg-avg"></i>7 日均線 <i class="lg-waist"></i>腰圍</div>
+          </div>
+          <div class="analytics-card analytics-wide">
+            <div class="analytics-title"><span>CHECK-IN MATRIX</span><strong>近 12 週登記熱度圖</strong><em id="healthStreak">—</em></div>
+            <svg id="checkinHeatmap" viewBox="0 0 640 150" role="img" aria-label="登記熱度圖"></svg>
+            <div class="analytics-legend"><i class="lg-none"></i>未登記 <i class="lg-w"></i>體重 <i class="lg-ww"></i>體重＋腰圍</div>
+          </div>
+        </div>
         <div class="weight-dashboard">
           <div class="calendar-panel">
             <div class="calendar-header">
@@ -786,38 +818,6 @@
               <div class="trend-heading"><strong>本月體重趨勢</strong><span id="trendCount">尚無紀錄</span></div>
               <svg id="weightTrendChart" viewBox="0 0 360 110" role="img" aria-label="本月體重趨勢圖"></svg>
             </div>
-          </div>
-        </div>
-        <div class="health-analytics" aria-label="健康數據分析">
-          <div class="analytics-card analytics-wide hud-card">
-            <div class="analytics-title"><span>BODY SCAN</span><strong>全身掃描 · 體態與登記同心環</strong><em id="bodyScanStatus">SCANNING</em></div>
-            <svg id="bodyScan" viewBox="0 0 700 345" role="img" aria-label="人體掃描面板"></svg>
-          </div>
-          <div class="analytics-card hud-card">
-            <div class="analytics-title"><span>WEEKLY AVG</span><strong>近 8 週平均體重</strong></div>
-            <svg id="weeklyBars" viewBox="0 0 320 190" role="img" aria-label="每週平均體重長條圖"></svg>
-          </div>
-          <div class="analytics-card hud-card">
-            <div class="analytics-title"><span>VITAL MONITOR</span><strong>生命監測</strong></div>
-            <svg id="vitalMonitor" viewBox="0 0 320 190" role="img" aria-label="生命監測面板"></svg>
-          </div>
-          <div class="analytics-card">
-            <div class="analytics-title"><span>BMI SCAN</span><strong>身體質量指數</strong></div>
-            <svg id="bmiGauge" viewBox="0 0 200 128" role="img" aria-label="BMI 儀表"></svg>
-          </div>
-          <div class="analytics-card">
-            <div class="analytics-title"><span>WAIST / HEIGHT</span><strong>腰身比 WHtR</strong></div>
-            <svg id="whtrGauge" viewBox="0 0 200 128" role="img" aria-label="腰身比儀表"></svg>
-          </div>
-          <div class="analytics-card analytics-wide">
-            <div class="analytics-title"><span>BIO-METRIC TREND</span><strong>體重 · 腰圍 · 7 日移動平均</strong></div>
-            <svg id="healthTrendChart" viewBox="0 0 640 230" role="img" aria-label="體重與腰圍趨勢圖"></svg>
-            <div class="analytics-legend"><i class="lg-weight"></i>體重 <i class="lg-avg"></i>7 日均線 <i class="lg-waist"></i>腰圍</div>
-          </div>
-          <div class="analytics-card analytics-wide">
-            <div class="analytics-title"><span>CHECK-IN MATRIX</span><strong>近 12 週登記熱度圖</strong><em id="healthStreak">—</em></div>
-            <svg id="checkinHeatmap" viewBox="0 0 640 150" role="img" aria-label="登記熱度圖"></svg>
-            <div class="analytics-legend"><i class="lg-none"></i>未登記 <i class="lg-w"></i>體重 <i class="lg-ww"></i>體重＋腰圍</div>
           </div>
         </div>
       </section>

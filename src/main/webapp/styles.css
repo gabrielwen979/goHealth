@@ -8645,3 +8645,15 @@ html[data-theme="light"] .preferences-form input[type="text"] {
   color: #1f2937 !important;
   border: 1px solid rgba(99, 102, 241, 0.3) !important;
 }
+
+#weight .health-analytics {
+  margin: 0 0 14px;
+}
+
+#weight .weight-dashboard {
+  margin-top: 0;
+}
+
+#weight.weight-section {
+  row-gap: 14px;
+}
