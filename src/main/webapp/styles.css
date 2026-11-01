@@ -8726,3 +8726,28 @@ html[data-theme="light"] .preferences-form input[type="text"] {
   overscroll-behavior: contain;
   scrollbar-width: thin;
 }
+
+/* Menu calendar notes: frameless, readable, visible when selected */
+html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 11px;
+}
+
+@media (max-width: 800px) {
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note,
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.weekend-note,
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.meal-note,
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.lunar-note,
+  html[data-theme] .day-picker-wrap:has(.menu-weekdays) .menu-day-note.holiday-note {
+    font-size: 9px !important;
+  }
+}
+
+html[data-theme] .day-picker-wrap:has(.menu-weekdays) .day-button.active .menu-day-note {
+  border: 0;
+  background: transparent;
+  color: #fff;
+}
