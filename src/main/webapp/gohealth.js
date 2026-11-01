@@ -508,13 +508,35 @@ function getMenuEntry(id) {
 
 const dairyPattern = /牛奶|鮮奶|奶油|奶酪|乳酪|起司|優格|優酪|鮮奶油|奶粉|乳清|乳製品|帕瑪森|馬茲拉|莫札瑞拉|瑞可達|菲達|希臘優格|^乳|[^椰豆麥杏]奶/;
 
-function isMealAllowed(meal) {
-  const ingredients = `${meal.ingredients.join(" ")} ${meal.name}`;
-  const avoided = profilePreferences.avoidFoods
-    .split(/[,，、]/)
+const avoidFoodGroups = [
+  { trigger: /牛(?!奶)|牛肉|beef/i, pattern: /牛(?!奶|油)|beef/i },
+  { trigger: /青蛙|田雞|蛙|蛇/, pattern: /青蛙|田雞|蛙|蛇/ },
+  { trigger: /乳酪|起司|芝士|cheese|乳製品|奶製品|牛奶|鮮奶|奶油|奶/i, pattern: /乳酪|起司|芝士|cheese|瑞可|瑞可達|帕瑪森|馬茲|莫札|菲達|切達|奶油乳酪/i },
+  { trigger: /乳製品|奶製品|牛奶|乳糖|鮮奶|奶類/, pattern: dairyPattern },
+  { trigger: /熏|燻|煙燻/, pattern: /熏|燻|培根|煙燻|火腿|臘肉/ },
+  { trigger: /香腸|臘腸|腸|熱狗/, pattern: /香腸|臘腸|熱狗|腸/ },
+  { trigger: /醃|漬|泡菜|酸菜|加工食品/, pattern: /醃|漬|泡菜|酸菜|酸豆|酸黃瓜|榨菜|醬菜|醬瓜|豆腐乳|鹹蛋|鹹魚|鹹豬|火腿|臘肉|培根|梅干|醬油膏|魚露|蝦醬|腐乳/ },
+  { trigger: /海鮮|魚|蝦|貝|蟹|甲殼/, pattern: /魚|蝦|蛤|蟹|貝|蚵|鮭|鯖|鮪|鱸|鱈|鯛|透抽|花枝|魷|干貝|海鮮|沙丁|鯷|柴魚|海參|海膽/ },
+  { trigger: /堅果|果仁|核桃|杏仁|腰果|花生/, pattern: /堅果|杏仁|核桃|腰果|胡桃|夏威夷豆|榛果|開心果|松子|花生|碧根果/ },
+];
+
+function getAvoidedFoods() {
+  return profilePreferences.avoidFoods
+    .split(/[,，、;；\s]+/)
     .map((food) => food.trim())
     .filter(Boolean);
-  if (avoided.some((food) => ingredients.includes(food))) return false;
+}
+
+function isMealAllowed(meal) {
+  const ingredients = `${meal.ingredients.join(" ")} ${meal.name}`;
+  const fullText = `${ingredients} ${(meal.steps || []).join(" ")} ${meal.tips || ""}`;
+  const avoided = getAvoidedFoods();
+  for (const food of avoided) {
+    if (fullText.includes(food)) return false;
+    if (avoidFoodGroups.some((group) => group.trigger.test(food) && group.pattern.test(fullText))) {
+      return false;
+    }
+  }
   if (profilePreferences.dietType === "dairyfree" && dairyPattern.test(ingredients.replace(/椰奶|豆奶|燕麥奶|杏仁奶|椰漿/g, ""))) {
     return false;
   }
@@ -538,6 +560,10 @@ function formatMenuDay(day) {
 }
 
 function rebuildMenuForPreferences() {
+  recommendedMealIds = recommendedMealIds.filter((id) => {
+    const entry = getMenuEntry(id);
+    return entry && isMealAllowed(entry.meal);
+  });
   try {
     buildMonthlyMeals(displayedMenuMonth);
     profileMessage.textContent = "";
@@ -1606,11 +1632,12 @@ function buildMonthlyMeals(month) {
   const lunarVegetarianMealCount = lunarVegetarianDays.length * 2;
   const allowedRegular = regularMeals.filter(isMealAllowed);
   let allowedLunar = lunarVegetarianMeals.filter(isMealAllowed);
-  if (!allowedLunar.length) {
-    allowedLunar = allowedRegular.filter((meal) => !/雞|豬|牛肉|牛排|羊|魚|鮭|鯖|鮪|蝦|蛤|海鮮|肉/.test(meal.ingredients.join(" ")));
+  if (allowedLunar.length < 6) {
+    allowedLunar = [...new Set([...allowedLunar, ...allowedRegular.filter((meal) => !/雞|豬|牛肉|牛排|羊|魚|鮭|鯖|鮪|蝦|蛤|海鮮|肉/.test(meal.ingredients.join(" ")))])];
   }
-  if (regularMealCount && !allowedRegular.length) {
-    throw new Error("目前飲食偏好與排除食材沒有可用的菜色，請放寬條件。");
+  if ((regularMealCount && !allowedRegular.length) || (lunarVegetarianMealCount && !allowedLunar.length)) {
+    monthlyMeals = [];
+    throw new Error("目前飲食偏好與排除食材沒有足夠的安全菜色，請放寬條件。");
   }
   const takeMeals = (pool, start, count) => {
     if (!pool.length) return [];
