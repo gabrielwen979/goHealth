@@ -1641,7 +1641,13 @@ function buildMonthlyMeals(month) {
   }
   const takeMeals = (pool, start, count) => {
     if (!pool.length) return [];
-    return Array.from({ length: count }, (_, i) => pool[(start + i) % pool.length]);
+    const picked = [];
+    for (let offset = 0; picked.length < count && offset < pool.length * 2; offset += 1) {
+      const candidate = pool[(start + offset) % pool.length];
+      if (!picked.some((meal) => meal.name === candidate.name)) picked.push(candidate);
+    }
+    while (picked.length < count) picked.push(pool[(start + picked.length) % pool.length]);
+    return picked;
   };
   const monthKey = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`;
   let seed = 2166136261;
@@ -1878,8 +1884,17 @@ function getMealPhotoSet(meal) {
   };
 }
 
-function renderMealPhotos(meal) {
-  const photos = getMealPhotoSet(meal);
+const alternateFinishedPhotos = ["meal-salad.jpg", "meal-eggs.jpg", "meal-chicken.jpg", "meal-fish.jpg", "meal-pork.jpg", "meal-salmon.jpg"];
+
+function renderMealPhotos(meal, previousMeal) {
+  const photos = { ...getMealPhotoSet(meal) };
+  if (previousMeal && getMealPhotoSet(previousMeal).finished === photos.finished) {
+    const lunchPhoto = photos.finished;
+    const unusedPhotos = alternateFinishedPhotos.filter((photo) => photo !== lunchPhoto);
+    let nameHash = 0;
+    for (const character of meal.name) nameHash = (nameHash * 31 + character.charCodeAt(0)) >>> 0;
+    photos.finished = unusedPhotos[nameHash % unusedPhotos.length];
+  }
   return `<div class="meal-photo-pair">
     <figure class="meal-photo meal-photo-finished">
       <img src="images/${photos.finished}" alt="${escapeHtml(meal.name)}完成料理情境照" loading="lazy" decoding="async" />
@@ -1915,7 +1930,7 @@ function renderMeals() {
       "先試味再補鹽，依序放上主菜、蔬菜與醬汁，趁熱享用；生菜或冷盤請用乾淨器具另外盛裝。",
     ];
     return `<article class="meal-card">
-      <div class="meal-art">${renderMealPhotos(meal)}</div>
+      <div class="meal-art">${renderMealPhotos(meal, index > 0 ? meals[index - 1] : null)}</div>
       <div class="meal-card-top">
         <div><span class="meal-type">${label}</span><h4>${escapeHtml(meal.name)}</h4></div>
         <div class="meal-kcal"><strong>${meal.kcal}</strong><span>kcal / 份</span></div>
