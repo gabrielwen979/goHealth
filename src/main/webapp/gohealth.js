@@ -1895,18 +1895,17 @@ function renderMealPhotos(meal, previousMeal) {
     for (const character of meal.name) nameHash = (nameHash * 31 + character.charCodeAt(0)) >>> 0;
     photos.finished = unusedPhotos[nameHash % unusedPhotos.length];
   }
+  const fallbackSrc = `images/${photos.finished}`;
   return `<div class="meal-photo-pair">
     <figure class="meal-photo meal-photo-finished">
-      <img src="images/${photos.finished}" alt="${escapeHtml(meal.name)}完成料理情境照" loading="lazy" decoding="async" />
+      <img src="images/dishes/${mealIds.get(meal)}.jpg" alt="${escapeHtml(meal.name)}完成料理示意圖" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${fallbackSrc}'" />
       <figcaption>完成料理參考</figcaption>
     </figure>
     <figure class="meal-photo meal-photo-ingredients">
       <img src="images/${photos.fresh}" alt="${escapeHtml(photos.freshLabel)}實拍" loading="lazy" decoding="async" />
       <figcaption>${escapeHtml(photos.freshLabel)}</figcaption>
     </figure>
-    ${meal.photo
-      ? '<span class="photo-credit">AI 生成示意圖・僅供擺盤參考</span>'
-      : '<a class="photo-credit" href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash 實拍・情境參考</a>'}
+    <span class="photo-credit">料理圖為 AI 生成示意圖・僅供擺盤參考</span>
   </div>`;
 }
 
