@@ -1848,7 +1848,7 @@ function getPreparationNote(meal) {
 
 function getMealPhotoSet(meal) {
   const ingredients = meal.ingredients.join(" ");
-  if (/歐姆蛋|烘蛋|蛋沙拉/.test(meal.name)) {
+  if (!meal.photo && /歐姆蛋|烘蛋|蛋沙拉/.test(meal.name)) {
     return {
       finished: "meal-eggs.jpg",
       fresh: "ingredients-eggs.jpg",
@@ -1864,6 +1864,12 @@ function getMealPhotoSet(meal) {
     { pattern: /豆腐|豆漿|豆腐/, finished: "meal-salad.jpg", fresh: "ingredients-vegetables.jpg", freshLabel: "蔬菜食材" },
   ];
   const match = photoSets.find(({ pattern }) => pattern.test(ingredients));
+  if (meal.photo) {
+    const fresh = match
+      ? { fresh: match.fresh, freshLabel: match.freshLabel }
+      : { fresh: "ingredients-vegetables.jpg", freshLabel: "蔬菜食材" };
+    return { finished: meal.photo, ...fresh };
+  }
   if (match) return match;
   return {
     finished: "meal-salad.jpg",
@@ -1883,7 +1889,9 @@ function renderMealPhotos(meal) {
       <img src="images/${photos.fresh}" alt="${escapeHtml(photos.freshLabel)}實拍" loading="lazy" decoding="async" />
       <figcaption>${escapeHtml(photos.freshLabel)}</figcaption>
     </figure>
-    <a class="photo-credit" href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash 實拍・情境參考</a>
+    ${meal.photo
+      ? '<span class="photo-credit">AI 生成示意圖・僅供擺盤參考</span>'
+      : '<a class="photo-credit" href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash 實拍・情境參考</a>'}
   </div>`;
 }
 
